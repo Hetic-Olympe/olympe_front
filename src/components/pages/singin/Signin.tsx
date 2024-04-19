@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { NavLink } from "react-router-dom"
+import { useAuth } from "@/contexts/AuthProvider";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -26,6 +28,9 @@ const formSchema = z.object({
 });
 
 export default function Signin() {
+    const { toast } = useToast();
+    const navigate = useNavigate();
+    const { isAuthenticated, role, signIn } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
 
     const form = useForm({
@@ -36,7 +41,10 @@ export default function Signin() {
         },
     });
 
-    const { toast } = useToast();
+    useEffect(() => {
+        if (!isAuthenticated) return;
+        navigate("/profile");
+    }, [isAuthenticated, role, navigate]);
 
     function onError(errors: FormErrors) {
         Object.values(errors).forEach(error => {
@@ -48,15 +56,37 @@ export default function Signin() {
         });
     }
 
-    function onSubmit(values: FormValues) {
+    async function onSubmit(values: FormValues) {
         setIsLoading(true);
-        setTimeout(() => {
-            setIsLoading(false);
+        await fetch('http://localhost:5001/api/users/signin', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(values),
+        }).then(async res => {
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.message);
+            }
+            const data = await res.json();
+            console.log("data", data);
+
+            // Use the signIn function from your auth context to save the token
+            signIn(values.email, 'user', data.token);
+
             toast({
                 title: "Sign in successful",
                 description: `Welcome back, ${values.email}!`,
             });
-        }, 1000);
+        }).catch(err => {
+            console.error("err", err);
+            toast({
+                variant: "destructive",
+                title: "Sign in failed",
+                description: `Error: ${err.message}`,
+            });
+        }).finally(() => setIsLoading(false));
     }
 
     return (
