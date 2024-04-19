@@ -54,15 +54,32 @@ export default function SignUp() {
         });
     }
 
-    function onSubmit(values: FormValues) {
+    async function onSubmit(values: FormValues) {
         setIsLoading(true);
-        setTimeout(() => {
-            setIsLoading(false);
+        await fetch('http://localhost:5001/api/users/signup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(values),
+        }).then(async res => {
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.message);
+            }
+            res.json();
             toast({
-                title: "Sign in successful",
-                description: `Welcome back, ${values.email}!`,
+                title: "Sign up successful",
+                description: `Welcome, ${values.email}!`,
             });
-        }, 1000);
+        }).catch(err => {
+            console.error("err",err);
+            toast({
+                variant: "destructive",
+                title: "Sign up failed",
+                description: `Error: ${err.message}`,
+            });
+        }).finally(() => setIsLoading(false));
     }
 
     return (
