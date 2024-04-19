@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import image from "@/assets/images/illustration2.jpg"
+import image from "@/assets/images/illustration2.jpg";
 
 type FormErrors = Record<string, { message?: string }>;
 
@@ -44,7 +44,7 @@ export default function SignUp() {
 
     const { toast } = useToast();
 
-    function onError(errors: FormErrors, event?: React.BaseSyntheticEvent) {
+    function onError(errors: FormErrors) {
         Object.values(errors).forEach(error => {
             toast({
                 variant: "destructive",

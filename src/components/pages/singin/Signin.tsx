@@ -38,7 +38,7 @@ export default function Signin() {
 
     const { toast } = useToast();
 
-    function onError(errors: FormErrors, event?: React.BaseSyntheticEvent) {
+    function onError(errors: FormErrors) {
         Object.values(errors).forEach(error => {
             toast({
                 variant: "destructive",
