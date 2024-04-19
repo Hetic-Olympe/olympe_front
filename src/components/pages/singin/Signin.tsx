@@ -61,7 +61,9 @@ export default function Signin() {
                 const errorData = await res.json();
                 throw new Error(errorData.message);
             }
-            res.json();
+            const data = await res.json();
+            console.log("data",data);
+            
             toast({
                 title: "Sign in successful",
                 description: `Welcome back, ${values.email}!`,
