@@ -5,12 +5,12 @@ import Signin from "./components/pages/singin/Signin"
 import Signup from "./components/pages/singup/Signup"
 import { AdminRouter } from "./components/routing/AdminRouter"
 import { UserRouter } from "./components/routing/UserRouter"
-
-const ADMIN_PATH = '/admin'
+import { Toaster } from "./components/ui/toaster"
 
 function App() {
   return (
     <AuthProvider>
+      <Toaster />
       <Router>
         <Routes>
           <Route path="/*" element={<UserRouter />} />
