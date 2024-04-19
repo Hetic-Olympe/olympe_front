@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { NavLink } from "react-router-dom"
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -31,6 +32,8 @@ const formSchema = z.object({
 });
 
 export default function SignUp() {
+    const { toast } = useToast();
+    const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
 
     const form = useForm({
@@ -41,8 +44,6 @@ export default function SignUp() {
             confirmPassword: "",
         },
     });
-
-    const { toast } = useToast();
 
     function onError(errors: FormErrors) {
         Object.values(errors).forEach(error => {
@@ -72,8 +73,9 @@ export default function SignUp() {
                 title: "Sign up successful",
                 description: `Welcome, ${values.email}!`,
             });
+            navigate("/signin");
         }).catch(err => {
-            console.error("err",err);
+            console.error("err", err);
             toast({
                 variant: "destructive",
                 title: "Sign up failed",
