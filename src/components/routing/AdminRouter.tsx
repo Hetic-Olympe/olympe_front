@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom"
+import { Route, Routes } from "react-router-dom"
 import AdminHome from "../pages/admin/home/AdminHome"
 
 export function AdminRouter() {
