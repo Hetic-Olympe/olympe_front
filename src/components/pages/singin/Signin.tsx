@@ -66,8 +66,8 @@ export default function Signin() {
             body: JSON.stringify(values),
         }).then(async res => {
             if (!res.ok) {
-                const errorData = await res.json();
-                throw new Error(errorData.message);
+                const errorData = await res.json();                
+                throw new Error(errorData.error);
             }
             const data = await res.json();
             console.log("data", data);
