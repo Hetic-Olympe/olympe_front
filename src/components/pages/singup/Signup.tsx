@@ -66,7 +66,7 @@ export default function SignUp() {
         }).then(async res => {
             if (!res.ok) {
                 const errorData = await res.json();
-                throw new Error(errorData.message);
+                throw new Error(errorData.error);
             }
             res.json();
             toast({
