@@ -1,15 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { NavLink } from "react-router-dom"
 import { useAuth } from "@/contexts/AuthProvider";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { useToast } from "@/components/ui/use-toast";
 import image from "@/assets/images/illustration.avif"
+import AuthForm from "@/components/authForm/AuthForm";
 
 type FormErrors = Record<string, { message?: string }>;
 
@@ -46,7 +43,7 @@ export default function Signin() {
         navigate("/profile");
     }, [isAuthenticated, role, navigate]);
 
-    function onError(errors: FormErrors) {
+    const onError = useCallback((errors: FormErrors) => {
         Object.values(errors).forEach(error => {
             toast({
                 variant: "destructive",
@@ -54,9 +51,9 @@ export default function Signin() {
                 description: error.message,
             });
         });
-    }
+    }, [toast]);
 
-    async function onSubmit(values: FormValues) {
+    const onSubmit = useCallback(async (values: FormValues) => {
         setIsLoading(true);
         await fetch('http://localhost:5001/api/users/signin', {
             method: 'POST',
@@ -66,13 +63,12 @@ export default function Signin() {
             body: JSON.stringify(values),
         }).then(async res => {
             if (!res.ok) {
-                const errorData = await res.json();                
+                const errorData = await res.json();
                 throw new Error(errorData.error);
             }
             const data = await res.json();
             console.log("data", data);
 
-            // Use the signIn function from your auth context to save the token
             signIn(values.email, 'user', data.token);
 
             toast({
@@ -87,52 +83,37 @@ export default function Signin() {
                 description: `Error: ${err.message}`,
             });
         }).finally(() => setIsLoading(false));
-    }
+    }, [signIn, toast]);
 
     return (
-        <>
-            <div className="w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]">
-                <div className="flex items-center justify-center py-12">
-                    <div className="mx-auto grid w-[350px] gap-6">
-                        <div className="grid gap-2 text-center">
-                            <h1 className="text-3xl font-bold">Sign in</h1>
-                            <p className="mx-auto grid w-[300px] text-balance text-muted-foreground">
-                                Enter your email below to login to your account
-                            </p>
-                        </div>
-                        <form className="grid gap-4" onSubmit={form.handleSubmit(onSubmit, onError)}>
-                            <div className="grid gap-2">
-                                <Label htmlFor="email">Email</Label>
-                                <Input id="email" type="email" placeholder="johndoe@gmail.com" {...form.register("email")} />
-                            </div>
-                            <div className="grid gap-2">
-                                <div className="flex items-center">
-                                    <Label htmlFor="password">Password</Label>
-                                </div>
-                                <Input id="password" type="password" {...form.register("password")} />
-                            </div>
-                            <Button type="submit" className="w-full" disabled={isLoading}>
-                                Login
-                            </Button>
-                        </form>
-                        <div className="mt-4 text-center text-sm">
-                            Don&apos;t have an account?{" "}
-                            <NavLink to="/signup" className="underline">
-                                Sign up
-                            </NavLink>
-                        </div>
-                    </div>
-                </div>
-                <div className="hidden bg-muted lg:block">
-                    <img
-                        src={image}
-                        alt="Paris 2024"
-                        width="1920"
-                        height="1080"
-                        className="h-full w-full object-cover"
-                    />
-                </div>
-            </div>
-        </>
+        <AuthForm<FormValues>
+            title="Sign In"
+            description="Enter your email and password to sign in"
+            fields={[
+                {
+                    label: "Email",
+                    type: "email",
+                    id: "email",
+                    placeholder: "johndoe@gmail.com",
+                    name: "email"
+                },
+                {
+                    label: "Password",
+                    type: "password",
+                    id: "password",
+                    placeholder: "",
+                    name: "password"
+                }
+            ]}
+            form={form}
+            onSubmit={onSubmit}
+            onError={onError}
+            isLoading={isLoading}
+            image={image}
+            buttonText="Sign In"
+            redirectText="Don't have an account? "
+            redirectButton="Sign up"
+            redirectLink="/signup"
+        />
     );
 }
