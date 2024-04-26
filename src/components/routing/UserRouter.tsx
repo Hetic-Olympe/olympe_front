@@ -1,11 +1,13 @@
 import { Route, Routes } from "react-router-dom"
 import { ProtectedRoute } from "./ProtectedRoute"
-import Profile from "../pages/profile/Profile"
+import Profile from "../pages/user/profile/Profile"
+import Nav from "../sections/Nav/Nav"
 
 export function UserRouter() {
     return (
         <>
             <header>User header</header>
+            <Nav />
 
             <Routes>
                 <Route path="/" element={<div>user dashboard</div>} />

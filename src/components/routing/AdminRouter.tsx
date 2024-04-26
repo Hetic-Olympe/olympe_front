@@ -1,10 +1,12 @@
 import { Route, Routes } from "react-router-dom"
 import AdminHome from "../pages/admin/home/AdminHome"
+import Nav from "../sections/Nav/Nav"
 
 export function AdminRouter() {
     return (
         <>
             <header>Admin header</header>
+            <Nav role="admin" />
 
             <Routes>
                 <Route path="/" element={<AdminHome />} />
