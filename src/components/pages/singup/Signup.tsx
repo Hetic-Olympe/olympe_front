@@ -62,7 +62,7 @@ export default function SignUp() {
                 method: 'POST',
                 body: JSON.stringify(values),
             });
-            if (!response.ok) {
+            if (!response.success) {                
                 const errorData = await response.json();
                 throw new Error(errorData.error);
             }
