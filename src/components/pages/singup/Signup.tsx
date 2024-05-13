@@ -6,6 +6,7 @@ import { z } from "zod";
 import { useToast } from "@/components/ui/use-toast";
 import image from "@/assets/images/illustration2.jpg";
 import AuthForm from "@/components/authForm/AuthForm";
+import useFetch from "@/hooks/useFetch";
 
 type FormErrors = Record<string, { message?: string }>;
 
@@ -32,6 +33,7 @@ export default function SignUp() {
     const { toast } = useToast();
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
+    const fetchSignUp = useFetch('/users/signup');
 
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -56,14 +58,11 @@ export default function SignUp() {
     const onSubmit = useCallback(async (values: FormValues) => {
         setIsLoading(true);
         try {
-            const response = await fetch('http://localhost:5001/api/users/signup', {
+            const response = await fetchSignUp({
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
                 body: JSON.stringify(values),
             });
-            if (!response.ok) {
+            if (!response.success) {                
                 const errorData = await response.json();
                 throw new Error(errorData.error);
             }
