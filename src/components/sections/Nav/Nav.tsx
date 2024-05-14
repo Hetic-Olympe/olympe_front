@@ -1,67 +1,61 @@
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 import NavItem from "./NavItem";
 import { useAuth } from "@/contexts/AuthProvider";
-
-interface NavProps {
-    role?: 'user' | 'admin';
-}
+import CalendarIcon from "@/components/icons/CalendarIcon";
+import logo from "@/assets/images/logo.png";
+import styles from "./nav.module.scss";
+import clsx from "clsx";
 
 interface Page {
-    id: number;
     to: string;
     title: string;
+    icon?: ReactNode;
     onClick?: () => void;
 }
 
-const Nav: FC<NavProps> = ({ role = 'user' }) => {
-    return (
-        <nav>
-            <ul>
-                <NavigationItems role={role} />
+interface NavProps {
+    pages: Page[];
+}
+
+const Nav: FC<NavProps> = ({ pages }) => (
+    <div className={styles.sidebar}>
+        <div className={styles.sidebar__logo}>
+            <img src={logo} alt="Olympe logo" />
+        </div>
+        <nav className={styles.sidebar__nav}>
+            <ul className={styles.sidebar__nav__items}>
+                {pages.map((page, index) => (
+                    <NavItem key={index} to={page.to}>
+                        {page.icon}
+                        {page.title}
+                    </NavItem>
+                ))}
+            </ul>
+            <ul className={clsx(styles.sidebar__nav__items, styles['sidebar__nav__items--bottom'])}>
                 <BottomNav />
             </ul>
         </nav>
-    );
-}
-
-const NavigationItems: FC<NavProps> = ({ role }) => {
-    const pages: Page[] = role === 'user' ? [
-        { id: 1, to: "/", title: "Dashboard" },
-        { id: 2, to: "/profile", title: "Profile" },
-    ] : [
-        { id: 1, to: "/", title: "Dashboard" },
-        { id: 2, to: "/data", title: "Data" },
-    ];
-
-    return (
-        <>
-            {pages.map((page) => (
-                <li key={page.id}>
-                    <NavItem to={page.to}>{page.title}</NavItem>
-                </li>
-            ))}
-        </>
-    );
-}
+    </div>
+);
 
 const BottomNav: FC = () => {
     const { isAuthenticated, signOut } = useAuth();
 
     const pages: Page[] = isAuthenticated ? [
-        { id: 1, to: "#", title: "Sign out", onClick: signOut }
+        { to: "/logout", title: "Logout", onClick: signOut }
     ] : [
-        { id: 1, to: "/signin", title: "Sign in" },
-        { id: 2, to: "/signup", title: "Sign up" },
+        { to: "/signin", title: "Login" },
     ];
 
     return (
-        <>
-            {pages.map((page) => (
-                <li key={page.id}>
-                    <NavItem to={page.to} onClick={page.onClick}>{page.title}</NavItem>
-                </li>
+        <ul>
+            {pages.map((page, index) => (
+                <NavItem key={index} to={page.to} onClick={page.onClick}>
+                    <CalendarIcon />
+                    {page.title}
+                </NavItem>
             ))}
-        </>
+        </ul>
     );
 }
 
