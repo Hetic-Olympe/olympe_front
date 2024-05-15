@@ -82,7 +82,7 @@ export default function Signin() {
         } finally {
             setIsLoading(false);
         }
-    }, [signIn, toast]);
+    }, [signIn, toast, fetchSignIn]);
 
     return (
         <AuthForm<FormValues>

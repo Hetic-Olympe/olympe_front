@@ -19,7 +19,7 @@ export default function Profile() {
         };
 
         getUser();
-    }, []);
+    }, [fetchUser]);
 
     return (
         <div>

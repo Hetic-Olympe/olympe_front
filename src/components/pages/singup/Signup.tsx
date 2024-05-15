@@ -62,7 +62,7 @@ export default function SignUp() {
                 method: 'POST',
                 body: JSON.stringify(values),
             });
-            if (!response.success) {                
+            if (!response.success) {
                 const errorData = await response.json();
                 throw new Error(errorData.error);
             }
@@ -81,7 +81,7 @@ export default function SignUp() {
         } finally {
             setIsLoading(false);
         }
-    }, [navigate, toast]);
+    }, [navigate, toast, fetchSignUp]);
 
     return (
         <AuthForm<FormValues>
