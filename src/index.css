@@ -1,10 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@200;400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: #F9FBFC;
+    --stroke-color: #DFE7EC;
+    --text-grey-200: #7295B0;
+    --text-grey-300: #446279;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
@@ -24,6 +28,16 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 221.2 83.2% 53.3%;
     --radius: 0.5rem;
+  }
+
+  .user {
+    --primary: #23B2F5;
+    --primary-light: #E8F7FE;
+  }
+
+  .admin {
+    --primary: #FB923C;
+    --primary-light: #FFF7ED;
   }
 
   .dark {
@@ -56,5 +70,14 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Raleway', sans-serif;
+    font-variant-numeric: lining-nums;
   }
+}
+
+.main {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  background-color: var(--background);
+  min-height: 100vh;
 }
