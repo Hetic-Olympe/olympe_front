@@ -1,5 +1,5 @@
 .sidebar {
-  border-right: 1px solid #dfe7ec;
+  border-right: 1px solid var(--stroke-color);
   width: 201px;
 
   &__logo {
@@ -23,12 +23,12 @@
       &--bottom {
         margin-top: 0;
         padding: 16px 14px;
-        border-top: 1px solid #dfe7ec;
+        border-top: 1px solid var(--stroke-color);
       }
     }
     &__link {
       font-weight: 500;
-      color: #7295b0;
+      color: var(--text-grey-200);
       padding: 8px 12px;
       border-radius: 8px;
       display: block;
