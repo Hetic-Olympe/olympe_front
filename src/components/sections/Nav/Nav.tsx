@@ -1,7 +1,6 @@
 import { FC, ReactNode } from "react";
 import NavItem from "./NavItem";
 import { useAuth } from "@/contexts/AuthProvider";
-import CalendarIcon from "@/components/icons/CalendarIcon";
 import logo from "@/assets/images/logo.png";
 import styles from "./nav.module.scss";
 import clsx from "clsx";
@@ -51,7 +50,6 @@ const BottomNav: FC = () => {
         <ul>
             {pages.map((page, index) => (
                 <NavItem key={index} to={page.to} onClick={page.onClick}>
-                    <CalendarIcon />
                     {page.title}
                 </NavItem>
             ))}
