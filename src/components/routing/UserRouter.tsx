@@ -4,6 +4,8 @@ import Profile from "../pages/user/profile/Profile"
 import Nav from "../sections/Nav/Nav"
 import { HomeIcon, CalendarIcon, StatsIcon, AthleteIcon, CommunityIcon } from "../icons/icons"
 import { useCreatePageLink } from "@/hooks/useCreatePageLink"
+import NotFound from "../sections/NotFound/NotFound"
+import UserDashboard from "../pages/user/dashboard/UserDashboard"
 
 const PRIMARY_ACTIVE_COLOR = "#23B2F5";
 const DEFAULT_COLOR = "#7295b0"
@@ -24,10 +26,8 @@ export function UserRouter() {
         <main className="main user">
             <Nav pages={USER_PAGES} />
             <div className="pageContainer">
-                <header>User header</header>
-
                 <Routes>
-                    <Route path="/" element={<div>user dashboard</div>} />
+                    <Route path="/" element={<UserDashboard />} />
                     <Route path="data/" element={<div>user data</div>} />
                     <Route
                         path="profile/"
@@ -37,7 +37,7 @@ export function UserRouter() {
                             </ProtectedRoute>
                         }
                     />
-                    <Route path="/*" element={<div>404 Not Found</div>} />
+                    <Route path="/*" element={<NotFound />} />
                 </Routes>
             </div>
         </main>

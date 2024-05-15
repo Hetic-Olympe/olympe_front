@@ -3,6 +3,7 @@ import Nav from "../sections/Nav/Nav"
 import { HomeIcon, CalendarIcon, SportIcon, AthleteIcon, CommunityIcon, MedalsIcon, CountriesIcon } from "../icons/icons"
 import { useCreatePageLink } from "@/hooks/useCreatePageLink"
 import AdminDashboard from "../pages/admin/dashboard/AdminDashboard"
+import NotFound from "../sections/NotFound/NotFound"
 
 const PRIMARY_ACTIVE_COLOR = "#FB923C";
 const DEFAULT_COLOR = "#7295b0"
@@ -31,9 +32,9 @@ export function AdminRouter() {
                     <Route path="/countries" element={<div>Countries Page</div>} />
                     <Route path="/athletes" element={<div>Athletes Page</div>} />
                     <Route path="/sports" element={<div>Sports Page</div>} />
-                    <Route path="/medals" element={<div>Sports Page</div>} />
-                    <Route path="/community" element={<div>Sports Page</div>} />
-                    <Route path="/*" element={<div>404 Not Found</div>} />
+                    <Route path="/medals" element={<div>Medlas Page</div>} />
+                    <Route path="/community" element={<div>Community Page</div>} />
+                    <Route path="/*" element={<NotFound />} />
                 </Routes>
             </aside>
         </main>
