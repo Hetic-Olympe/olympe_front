@@ -1,8 +1,8 @@
 import { Route, Routes } from "react-router-dom"
-import AdminHome from "../pages/admin/home/AdminHome"
 import Nav from "../sections/Nav/Nav"
 import { HomeIcon, CalendarIcon, SportIcon, AthleteIcon, CommunityIcon, MedalsIcon, CountriesIcon } from "../icons/icons"
 import { useCreatePageLink } from "@/hooks/useCreatePageLink"
+import AdminDashboard from "../pages/admin/dashboard/AdminDashboard"
 
 const PRIMARY_ACTIVE_COLOR = "#FB923C";
 const DEFAULT_COLOR = "#7295b0"
@@ -24,18 +24,18 @@ export function AdminRouter() {
         <main className="main admin">
             <Nav pages={ADMIN_PAGES} />
 
-            <div className="pageContainer">
-                <header>Admin header</header>
-
+            <aside className="pageContainer">
                 <Routes>
-                    <Route path="/" element={<AdminHome />} />
+                    <Route path="/" element={<AdminDashboard />} />
                     <Route path="/events" element={<div>Events Page</div>} />
                     <Route path="/countries" element={<div>Countries Page</div>} />
                     <Route path="/athletes" element={<div>Athletes Page</div>} />
                     <Route path="/sports" element={<div>Sports Page</div>} />
+                    <Route path="/medals" element={<div>Sports Page</div>} />
+                    <Route path="/community" element={<div>Sports Page</div>} />
                     <Route path="/*" element={<div>404 Not Found</div>} />
                 </Routes>
-            </div>
+            </aside>
         </main>
     )
 }
