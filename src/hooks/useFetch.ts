@@ -1,12 +1,16 @@
 import { useAuth } from "@/contexts/AuthProvider";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 
 const useFetch = (path: string) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(false);
   const { auth } = useAuth();
   const baseUrl = "http://localhost:5001/api";
 
   const fetchWithAuth = useCallback(
     async (options: RequestInit = {}) => {
+      setIsLoading(true);
+      setError(false);
       try {
         const response = await fetch(`${baseUrl}${path}`, {
           ...options,
@@ -23,16 +27,18 @@ const useFetch = (path: string) => {
         }
 
         const data = await response.json();
-        return data;
+        return { data };
       } catch (err) {
-        console.error("err", err);
+        setError(true);
         throw err;
+      } finally {
+        setIsLoading(false);
       }
     },
     [auth?.token, path]
   );
 
-  return fetchWithAuth;
+  return { isLoading, error, fetchData: fetchWithAuth };
 };
 
 export default useFetch;
