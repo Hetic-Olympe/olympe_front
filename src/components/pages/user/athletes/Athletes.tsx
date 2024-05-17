@@ -1,5 +1,5 @@
 import useFetch from "@/hooks/useFetch";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import AthleteCard from "./athleteCard/AthleteCard";
 import Header from "@/components/sections/Header/Header";
 import { useToast } from "@/components/ui/use-toast";
@@ -9,16 +9,13 @@ import PageTemplate from "@/components/sections/PageTeample/PageTemplate";
 
 export default function Athletes() {
   const { toast } = useToast();
-  const {
-    data: athletes,
-    isLoading,
-    error,
-    fetchData: fetchAthletes,
-  } = useFetch<Athlete[]>("/athletes");
+  const [athletes, setAthletes] = useState<Athlete[]>([]);
+  const { isLoading, error, fetchData: fetchAthletes } = useFetch("/athletes");
 
   const getAthletes = useCallback(async () => {
     try {
-      await fetchAthletes({ method: "GET" });
+      const { data } = await fetchAthletes({ method: "GET" });
+      setAthletes(data);
     } catch (error) {
       toast({
         variant: "destructive",
@@ -31,6 +28,10 @@ export default function Athletes() {
   useEffect(() => {
     getAthletes();
   }, [getAthletes]);
+
+  const goToAthleteDetails = () => {
+    console.log("Go to athlete details");
+  };
 
   return (
     <div>
@@ -45,7 +46,11 @@ export default function Athletes() {
             ? athletes?.map((athlete) => {
                 return (
                   <GridItem columnSpan={4}>
-                    <AthleteCard key={athlete.id} athlete={athlete} />
+                    <AthleteCard
+                      key={athlete.id}
+                      athlete={athlete}
+                      onClick={goToAthleteDetails}
+                    />
                   </GridItem>
                 );
               })
