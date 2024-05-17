@@ -4,6 +4,8 @@ import AthleteCard from "./athleteCard/AthleteCard";
 import Header from "@/components/sections/Header/Header";
 import { useToast } from "@/components/ui/use-toast";
 import { Athlete } from "./athlete.types";
+import { Grid, GridItem } from "@/components/ui/Grid/Grid";
+import PageTemplate from "@/components/sections/PageTeample/PageTemplate";
 
 export default function Athletes() {
   const { toast } = useToast();
@@ -37,14 +39,20 @@ export default function Athletes() {
         subtitle="Description"
         count={athletes?.length}
       />
-      <div>
-        {!isLoading && athletes?.length !== 0
-          ? athletes?.map((athlete) => {
-              return <AthleteCard key={athlete.id} athlete={athlete} />;
-            })
-          : "Loading athletes..."}
+      <PageTemplate>
+        <Grid>
+          {!isLoading && athletes?.length !== 0
+            ? athletes?.map((athlete) => {
+                return (
+                  <GridItem columnSpan={4}>
+                    <AthleteCard key={athlete.id} athlete={athlete} />
+                  </GridItem>
+                );
+              })
+            : "Loading athletes..."}
+        </Grid>
         {error && <p>An error has occured ...</p>}
-      </div>
+      </PageTemplate>
     </div>
   );
 }

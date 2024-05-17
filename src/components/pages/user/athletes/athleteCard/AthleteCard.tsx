@@ -1,6 +1,8 @@
 import HeartIcon from "@/components/icons/HeartIcon";
 import { Athlete } from "../athlete.types";
 import styles from "./athlete.module.scss";
+import athlete_f from "@/assets/images/athlete_f.png";
+import athlete_m from "@/assets/images/athlete_m.png";
 
 interface AthleteCardProps {
   athlete: Athlete;
@@ -13,18 +15,27 @@ const AthleteCard = ({ athlete }: AthleteCardProps) => {
     console.log("Add athlete to likes");
   };
 
+  const profilePicture = athlete.pictureProfile
+    ? athlete.pictureProfile
+    : athlete.gender === "F"
+    ? athlete_f
+    : athlete_m;
+
   return (
     <div className={styles.athlete}>
       <img
         className={styles.athlete__pictureProfile}
-        src={athlete.pictureProfile}
-        alt="Athlete's profile picture"
+        src={profilePicture}
+        alt={`Photo of ${athlete.firstname} ${athlete.lastname}`}
       />
-      <div>
+      <div className={styles.athlete__info_section}>
         <div className={styles.athlete__top_section}>
           <p className={styles.athlete__title}>
             {athlete.firstname} {athlete.lastname}
           </p>
+          <span className={styles.athlete__tooltip}>
+            {athlete.firstname} {athlete.lastname}
+          </span>
           <p className={styles.athlete__subtitle}>NB medals</p>
         </div>
         <div>
