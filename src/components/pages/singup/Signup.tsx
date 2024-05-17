@@ -32,8 +32,8 @@ const formSchema = z.object({
 export default function SignUp() {
     const { toast } = useToast();
     const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(false);
-    const fetchSignUp = useFetch('/users/signup');
+    const { fetchData: fetchSignUp, isLoading } = useFetch('/users/signup');
+
 
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -56,16 +56,11 @@ export default function SignUp() {
 
 
     const onSubmit = useCallback(async (values: FormValues) => {
-        setIsLoading(true);
         try {
-            const response = await fetchSignUp({
+            await fetchSignUp({
                 method: 'POST',
                 body: JSON.stringify(values),
             });
-            if (!response.success) {
-                const errorData = await response.json();
-                throw new Error(errorData.error);
-            }
             toast({
                 title: "Sign up successful",
                 description: `Welcome, ${values.email}!`,
@@ -78,8 +73,6 @@ export default function SignUp() {
                 title: "Sign up failed",
                 description: `Error: ${(error as Error).message}`,
             });
-        } finally {
-            setIsLoading(false);
         }
     }, [navigate, toast, fetchSignUp]);
 
