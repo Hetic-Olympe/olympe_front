@@ -15,6 +15,8 @@ export default function Athletes() {
   const getAthletes = useCallback(async () => {
     try {
       const { data } = await fetchAthletes({ method: "GET" });
+      console.log("data", data);
+
       setAthletes(data);
     } catch (error) {
       toast({

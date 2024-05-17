@@ -3,6 +3,7 @@ import { Athlete } from "../athlete.types";
 import styles from "./athlete.module.scss";
 import athlete_f from "@/assets/images/athlete_f.png";
 import athlete_m from "@/assets/images/athlete_m.png";
+import ReactCountryFlag from "react-country-flag";
 
 interface AthleteCardProps {
   athlete: Athlete;
@@ -10,7 +11,7 @@ interface AthleteCardProps {
 }
 
 const AthleteCard = ({ athlete, onClick }: AthleteCardProps) => {
-  console.log("firstname", athlete.firstname);
+  console.log(`athlete ${athlete.firstname}`, athlete);
 
   const addAthleteToLikes = () => {
     console.log("Add athlete to likes");
@@ -50,14 +51,19 @@ const AthleteCard = ({ athlete, onClick }: AthleteCardProps) => {
             <p className={styles.athlete__category_title}>
               Sport:{" "}
               <span className={styles.athlete__category}>
-                {athlete?.athleteSports.name}
+                {athlete.sportField}
               </span>
             </p>
             <p className={styles.athlete__category_title}>
               Nationality:{" "}
-              <span className={styles.athlete__flag}>
-                {athlete.country.iso}
-              </span>
+              <ReactCountryFlag
+                svg
+                countryCode={athlete.country.iso}
+                style={{
+                  fontSize: "1.3em",
+                }}
+                aria-label="United States"
+              />
             </p>
             <p className={styles.athlete__category_title}>
               Age:{" "}

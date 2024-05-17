@@ -12,6 +12,9 @@
     border-color: var(--primary);
   }
   &__top_section {
+    padding-bottom: 4px;
+    border-bottom: 1px solid #DFE7EC;
+    margin-bottom: 4px;
     position: relative;
     &:hover {
       .athlete__tooltip {
