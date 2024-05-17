@@ -1,0 +1,47 @@
+.athlete {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  padding: 24px;
+  border: 1px solid #DFE7EC;
+  border-radius: 8px;
+  &__title {
+    color: var(--text-grey-300);
+    font-size: 20px;
+    font-weight: 600;
+    overflow: hidden;
+    width: 250px;
+    text-wrap: nowrap;
+    text-overflow: ellipsis;
+  }
+  &__subtitle {
+    color: var(--text-grey-300);
+    font-size: 16px;
+    font-weight: 400;
+  }
+  &__top_section {
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    border-bottom: 2px solid #DFE7EC;
+  }
+  &__category_title {
+    color: var(--text-grey-200);
+    font-size: 16px;
+    font-weight: 400;
+  }
+  &__category {
+    color: var(--text-grey-200);
+    font-size: 16px;
+    font-weight: 600;
+  }
+  &__pictureProfile {
+    width: 160px;
+    height: 160px;
+    border-radius: 8px;
+  }
+  &__like_btn {
+    display: flex;
+    justify-content: flex-end;
+  }
+}
