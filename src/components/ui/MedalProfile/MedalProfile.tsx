@@ -1,11 +1,14 @@
+import ReactCountryFlag from "react-country-flag";
 import styles from "./MedalProfile.module.scss";
-
 interface MedalProfileProps {
   type: number;
   athlete: {
     id: number;
     name: string;
-    country: string;
+    country: {
+      iso: string,
+      nicename: string,
+    };
     sport: string;
     profile: string;
     totalMedals: number;
@@ -61,7 +64,18 @@ function MedalProfile({ type, athlete }: MedalProfileProps) {
           Sport : <span>{athlete.sport}</span>
         </p>
         <p>
-          Nationality : <span>{athlete.country}</span>
+          Nationality : {" "}
+          <span className={styles.medalProfile__content__medal__flag}>
+            <ReactCountryFlag
+              svg
+              countryCode={athlete.country.iso}
+              style={{
+                fontSize: '1.3em',
+              }}
+              aria-label="United States"
+            />
+            <div className={styles.medalProfile__content__medal__flag__nicename}>{athlete.country.nicename}</div>
+          </span>
         </p>
       </div>
     </div>
