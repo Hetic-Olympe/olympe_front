@@ -1,41 +1,49 @@
 import useFetch from "@/hooks/useFetch";
-import { useEffect, useState } from "react";
-import { Athlete } from "./athlete.types";
+import { useCallback, useEffect } from "react";
 import AthleteCard from "./athleteCard/AthleteCard";
 import Header from "@/components/sections/Header/Header";
+import { useToast } from "@/components/ui/use-toast";
+import { Athlete } from "./athlete.types";
 
 export default function Athletes() {
-  const [athletes, setAthletes] = useState<Athlete[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const fetchAthletes = useFetch("/athletes");
+  const { toast } = useToast();
+  const {
+    data: athletes,
+    isLoading,
+    error,
+    fetchData: fetchAthletes,
+  } = useFetch<Athlete[]>("/athletes");
+
+  const getAthletes = useCallback(async () => {
+    try {
+      await fetchAthletes({ method: "GET" });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Form submission failed",
+        description: `Erreur: ${error}`,
+      });
+    }
+  }, [toast, fetchAthletes]);
 
   useEffect(() => {
-    const getAthletes = async () => {
-      try {
-        const data = await fetchAthletes({ method: "GET" });
-        setAthletes(data);
-        setIsLoading(false);
-      } catch (error) {
-        console.error(error);
-      }
-    };
     getAthletes();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [getAthletes]);
 
   return (
     <div>
       <Header
         title="All athletes"
         subtitle="Description"
-        count={athletes.length}
+        count={athletes?.length}
       />
       <div>
-        {!isLoading && athletes.length !== 0
-          ? athletes.map((athlete) => {
+        {!isLoading && athletes?.length !== 0
+          ? athletes?.map((athlete) => {
               return <AthleteCard key={athlete.id} athlete={athlete} />;
             })
-          : "Is loading"}
+          : "Loading athletes..."}
+        {error && <p>An error has occured ...</p>}
       </div>
     </div>
   );
