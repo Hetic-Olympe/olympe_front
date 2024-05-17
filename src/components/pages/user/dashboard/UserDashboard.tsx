@@ -7,7 +7,6 @@ import athletesData from "../../../ui/MedalProfile/temp__athlete.json";
 
 export default function UserDashboard() {
   const athletes = athletesData.athletes;
-
   return (
     <>
       <Header
@@ -30,7 +29,7 @@ export default function UserDashboard() {
           </GridItem>
           <GridItem columnSpan={6}>
             <Card title="Top athletes" link="/athletes">
-              <div className="flex justify-space-between gap-[2rem]">
+              <div className="flex gap-[2rem]">
                 <MedalProfile type={1} athlete={athletes[0]} />
                 <MedalProfile type={2} athlete={athletes[1]} />
                 <MedalProfile type={3} athlete={athletes[2]} />
