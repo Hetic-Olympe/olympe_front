@@ -29,9 +29,7 @@ export default function Signin() {
     const { toast } = useToast();
     const navigate = useNavigate();
     const { isAuthenticated, role, signIn } = useAuth();
-    const [isLoading, setIsLoading] = useState(false);
-    const fetchSignIn = useFetch('/users/signin');
-
+    const { fetchData: fetchSignIn, isLoading } = useFetch('/users/signin');
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -42,10 +40,11 @@ export default function Signin() {
 
     useEffect(() => {
         if (!isAuthenticated) return;
-        console.log('role', role);
+
         if (role === "user") return navigate("/profile");
+
         navigate("/admin");
-    }, [isAuthenticated, role, navigate]);
+    }, [isAuthenticated, role, navigate, signIn]);
 
     const onError = useCallback((errors: FormErrors) => {
         Object.values(errors).forEach(error => {
@@ -57,14 +56,14 @@ export default function Signin() {
         });
     }, [toast]);
 
-    const onSubmit = useCallback(async (values: FormValues) => {
-        setIsLoading(true);
-
+    const onSubmit = async (values: FormValues) => {
         try {
-            const data = await fetchSignIn({
+            const { data } = await fetchSignIn({
                 method: 'POST',
                 body: JSON.stringify(values),
             });
+
+            if (!data) return;
 
             signIn(values.email, data.role, data.token);
 
@@ -79,10 +78,8 @@ export default function Signin() {
                 title: "Sign in failed",
                 description: `Error: ${err instanceof Error ? err.message : err}`,
             });
-        } finally {
-            setIsLoading(false);
         }
-    }, [signIn, toast, fetchSignIn]);
+    };
 
     return (
         <AuthForm<FormValues>
