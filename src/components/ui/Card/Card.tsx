@@ -10,6 +10,12 @@ interface CardProps {
     minHeight?: number;
 }
 
+interface KPICardProps {
+    title: string;
+    value: string;
+    icon: React.ReactNode;
+}
+
 export const Card = ({ title, children, link, padding = 32, minHeight = 0 }: CardProps) => {
     return (
         <div className={styles.card} style={{ minHeight }}>
@@ -20,6 +26,18 @@ export const Card = ({ title, children, link, padding = 32, minHeight = 0 }: Car
             <div className={styles.card__content} style={{ padding: `0 ${padding}px ${padding}px ${padding}px` }}>
                 {children}
             </div>
+        </div>
+    );
+}
+
+export const KPICard = ({ title, value, icon }: KPICardProps) => {
+    return (
+        <div className={`${styles.card} ${styles['card--kpi']}`}>
+            <div className={styles['card--kpi__content']}>
+                <h3 className={styles['card--kpi__content__title']}>{title}</h3>
+                <p className={styles['card--kpi__content__value']}>{value}</p>
+            </div>
+            <div className={styles['card--kpi__icon']}>{icon}</div>
         </div>
     );
 }

@@ -3,10 +3,11 @@ import styles from "./Grid.module.scss";
 interface GridProps {
     children: React.ReactNode;
     gap?: number; // Gap between grid items
+    margin?: string; // Margin around the grid
 }
 
-export const Grid: React.FC<GridProps> = ({ children, gap = 32 }) => (
-    <div className={styles.grid} style={{ gap: gap }}>
+export const Grid: React.FC<GridProps> = ({ children, gap = 32, margin = 0 }) => (
+    <div className={styles.grid} style={{ gap: gap, margin: margin }}>
         {children}
     </div>
 );
