@@ -6,8 +6,8 @@ interface MedalProfileProps {
     id: number;
     name: string;
     country: {
-      iso: string,
-      nicename: string,
+      iso: string;
+      nicename: string;
     };
     sport: string;
     profile: string;
@@ -15,6 +15,11 @@ interface MedalProfileProps {
   };
 }
 
+/**
+ *
+ * @param {number} type - The type of medal (1 for gold, 2 for silver, 3 for bronze).
+ * @param {object} athlete - The object containing the athlete's information.
+ */
 function MedalProfile({ type, athlete }: MedalProfileProps) {
   let medalColorTxt;
   let medalColorBg;
@@ -64,17 +69,21 @@ function MedalProfile({ type, athlete }: MedalProfileProps) {
           Sport : <span>{athlete.sport}</span>
         </p>
         <p>
-          Nationality : {" "}
+          Nationality :{" "}
           <span className={styles.medalProfile__content__medal__flag}>
             <ReactCountryFlag
               svg
               countryCode={athlete.country.iso}
               style={{
-                fontSize: '1.3em',
+                fontSize: "1.3em",
               }}
               aria-label="United States"
             />
-            <div className={styles.medalProfile__content__medal__flag__nicename}>{athlete.country.nicename}</div>
+            <div
+              className={styles.medalProfile__content__medal__flag__nicename}
+            >
+              {athlete.country.nicename}
+            </div>
           </span>
         </p>
       </div>
