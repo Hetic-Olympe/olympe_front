@@ -1,34 +1,46 @@
 import { useAuth } from "@/contexts/AuthProvider";
+import { useCallback, useState } from "react";
 
-const useFetch = (path: string) => {
-    const { auth } = useAuth();
-    const baseUrl = 'http://localhost:5001/api';
+const useFetch = <T>(path: string) => {
+  const [data, setData] = useState<T | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(false);
+  const { auth } = useAuth();
+  const baseUrl = "http://localhost:5001/api";
 
-    const fetchWithAuth = async (options: RequestInit = {}) => {
-        try {
-            const response = await fetch(`${baseUrl}${path}`, {
-                ...options,
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...(auth?.token ? { Authorization: `Bearer ${auth.token}` } : {}),
-                    ...options.headers,
-                },
-            });
+  const fetchWithAuth = useCallback(
+    async (options: RequestInit = {}) => {
+      setIsLoading(true);
+      setError(false);
+      setData(null);
+      try {
+        const response = await fetch(`${baseUrl}${path}`, {
+          ...options,
+          headers: {
+            "Content-Type": "application/json",
+            ...(auth?.token ? { Authorization: `Bearer ${auth.token}` } : {}),
+            ...options.headers,
+          },
+        });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error);
-            }
-
-            const data = await response.json();
-            return data;
-        } catch (err) {
-            console.error("err", err);
-            throw err;
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error);
         }
-    };
 
-    return fetchWithAuth;
+        const data = await response.json();
+        setData(data);
+      } catch (err) {
+        setError(true);
+        throw err;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [auth?.token, path]
+  );
+
+  return { data, isLoading, error, fetchData: fetchWithAuth };
 };
 
 export default useFetch;
