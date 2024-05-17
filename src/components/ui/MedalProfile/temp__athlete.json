@@ -5,7 +5,10 @@
       "name": "John Applestrava",
       "profile": "https://cdn-s-www.ledauphine.com/images/A21B78F4-0F65-41EF-8C39-694897656393/NW_raw/kevin-mayer-lors-des-championnats-du-monde-d-athletisme-en-hongrie-en-2023-photo-petr-david-josek-ap-sipa-1715715517.jpg",
       "sport": "running",
-      "country": "USA",
+      "country": {
+        "iso": "FR",
+        "nicename": "France"
+      },
       "totalMedals": 5
     },
     {
@@ -13,7 +16,10 @@
       "name": "Jane Doe",
       "profile": "https://cdn-s-www.ledauphine.com/images/A21B78F4-0F65-41EF-8C39-694897656393/NW_raw/kevin-mayer-lors-des-championnats-du-monde-d-athletisme-en-hongrie-en-2023-photo-petr-david-josek-ap-sipa-1715715517.jpg",
       "sport": "swimming",
-      "country": "CAN",
+      "country": {
+        "iso": "AU",
+        "nicename": "Australia"
+      },
       "totalMedals": 3
     },
     {
@@ -21,7 +27,10 @@
       "name": "Bob Smith",
       "profile": "https://cdn-s-www.ledauphine.com/images/A21B78F4-0F65-41EF-8C39-694897656393/NW_raw/kevin-mayer-lors-des-championnats-du-monde-d-athletisme-en-hongrie-en-2023-photo-petr-david-josek-ap-sipa-1715715517.jpg",
       "sport": "cycling",
-      "country": "AUS",
+      "country": {
+        "iso": "IT",
+        "nicename": "Italy"
+      },
       "totalMedals": 5
     }
   ]
