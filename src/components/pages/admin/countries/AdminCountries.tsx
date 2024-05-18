@@ -6,12 +6,19 @@ import { useCallback, useEffect, useState } from "react";
 import styles from "./adminCountries.module.scss";
 import { Grid, GridItem } from "@/components/ui/Grid/Grid";
 import { Card } from "@/components/ui/Card/Card";
+import ReactCountryFlag from "react-country-flag";
 
-interface Country {
+export interface Continent {
+  id: number;
+  name: string;
+}
+
+export interface Country {
   id: number;
   iso: string;
   nicename: string;
   isParticipate: boolean;
+  continent: Continent;
 }
 
 export default function AdminCountries() {
@@ -84,15 +91,23 @@ export default function AdminCountries() {
                   {countries.length > 0
                     ? countries.map((country) => (
                         <div key={country.id} className={styles.row}>
+                          <ReactCountryFlag countryCode={country.iso} />
                           <p>{country.iso}</p>
                           <p>{country.nicename}</p>
-                          <label htmlFor="isParticipate">Is participate</label>
-                          <input
-                            type="checkbox"
-                            name="isParticipate"
-                            checked={country.isParticipate}
-                            onChange={() => handleParticipation(country.id)}
-                          />
+                          <p>{country.continent.name}</p>
+                          <label
+                            htmlFor="isParticipate"
+                            className={styles.row__toggle}
+                          >
+                            Is participate
+                            <input
+                              type="checkbox"
+                              name="isParticipate"
+                              className={styles.row__toggle__checkbox}
+                              checked={country.isParticipate}
+                              onChange={() => handleParticipation(country.id)}
+                            />
+                          </label>
                         </div>
                       ))
                     : "No data found"}
