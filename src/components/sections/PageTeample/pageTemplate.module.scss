@@ -1,3 +1,5 @@
 .page {
   padding: 32px;
+  height: calc(100vh - 117px);
+  overflow: scroll;
 }
