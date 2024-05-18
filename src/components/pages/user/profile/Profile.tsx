@@ -6,7 +6,7 @@ export default function Profile() {
   const { auth } = useAuth();
   const email = auth?.username;
 
-  const { fetchData: fetchUser } = useFetch("/users/me");
+  const { fetchData: fetchUser } = useFetch("/api/users/me");
 
   useEffect(() => {
     const getUser = async () => {

@@ -29,7 +29,7 @@ export default function Signin() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { isAuthenticated, role, signIn } = useAuth();
-  const { fetchData: fetchSignIn, isLoading } = useFetch("/users/signin");
+  const { fetchData: fetchSignIn, isLoading } = useFetch("/api/users/signin");
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
