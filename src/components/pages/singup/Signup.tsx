@@ -34,7 +34,7 @@ const formSchema = z
 export default function SignUp() {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { fetchData: fetchSignUp, isLoading } = useFetch("/users/signup");
+  const { fetchData: fetchSignUp, isLoading } = useFetch("/api/users/signup");
 
   const form = useForm({
     resolver: zodResolver(formSchema),
