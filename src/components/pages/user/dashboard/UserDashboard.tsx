@@ -2,8 +2,9 @@ import Header from "@/components/sections/Header/Header";
 import PageTemplate from "@/components/sections/PageTeample/PageTemplate";
 import MedalProfile from "@/components/ui/MedalProfile/MedalProfile";
 import athletesData from "../../../ui/MedalProfile/temp__athlete.json";
+import { MedalsIcon, AthleteIcon } from "@/components/icons/icons";
 import { Grid, GridItem } from "@/components/ui/Grid/Grid";
-import { Card, Divider } from "@/components/ui/Card/Card";
+import { Card, Divider, KPICard } from "@/components/ui/Card/Card";
 
 export default function UserDashboard() {
   const athletes = athletesData.athletes;
@@ -14,6 +15,17 @@ export default function UserDashboard() {
         subtitle="Description for amazing dashboard in Paris 2024 with all KPI"
       />
       <PageTemplate>
+        <Grid margin={'0px 0px 32px 0px'}>
+          <GridItem columnSpan={3}>
+            <KPICard title="Athletes" value="532" icon={<AthleteIcon color={'#23B2F5'} />} />
+          </GridItem>
+          <GridItem columnSpan={3}>
+            <KPICard title="Medals won" value="192" icon={<MedalsIcon color={'#23B2F5'} />} />
+          </GridItem>
+          <GridItem columnSpan={3}>
+            <KPICard title="Medals won" value="192" icon={<AthleteIcon color={'#23B2F5'} />} />
+          </GridItem>
+        </Grid>
         <Grid>
           <GridItem columnSpan={6} rowSpan={4}>
             <Card title="Results" link="/statistics" minHeight={500}>
@@ -37,7 +49,7 @@ export default function UserDashboard() {
             </Card>
           </GridItem>
         </Grid>
-      </PageTemplate>
+      </PageTemplate >
     </>
   )
 }

@@ -2,6 +2,31 @@
   background-color: white;
   border: 1px solid var(--stroke-color);
   border-radius: 8px;
+  line-height: 1;
+  &--kpi {
+    display: flex;
+    justify-content: space-between;
+    padding: 32px;
+    &__icon {
+      svg {
+        width: 32px;
+        height: 32px;
+      }
+    }
+    &__content {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      &__title {
+        color: var(--text-grey-200);
+      }
+      &__value {
+        color: var(--text-grey-300);
+        font-size: 32px;
+        font-weight: 600;
+      }
+    }
+  }
   &__header {
     display: flex;
     justify-content: space-between;
