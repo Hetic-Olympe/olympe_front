@@ -1,8 +1,9 @@
 import Header from "@/components/sections/Header/Header";
 import PageTemplate from "@/components/sections/PageTeample/PageTemplate";
 import { Grid, GridItem } from "@/components/ui/Grid/Grid";
-import { Card } from "@/components/ui/Card/Card";
-import { useState, useEffect } from "react";
+import { Card, KPICard } from "@/components/ui/Card/Card";
+import StatsIcon from "@/components/icons/StatsIcon";
+import { useState, useEffect, useMemo } from "react";
 import useFetch from "@/hooks/useFetch";
 import { useToast } from "@/components/ui/use-toast";
 import styles from "./adminDashboard.module.scss";
@@ -31,6 +32,15 @@ export default function AdminDashboard() {
         "/admin/api/users"
     );
 
+    const connectedUsersCount = useMemo(() => {
+        return users.filter(user => user.isConnected).length;
+    }, [users]);
+
+    const newUsersCount = useMemo(() => {
+        const today = new Date().toISOString().split('T')[0];
+        return users.filter(user => user.createdAt.startsWith(today)).length;
+    }, [users]);
+
     useEffect(() => {
         const getUsers = async () => {
             try {
@@ -53,6 +63,17 @@ export default function AdminDashboard() {
         <>
             <Header title="Manage all users" subtitle="Handle users information and moderation" />
             <PageTemplate>
+                <Grid margin={'0px 0px 32px 0px'}>
+                    <GridItem columnSpan={3}>
+                        <KPICard title="Total users" value={users.length} icon={<StatsIcon color={'#FB923C'} />} />
+                    </GridItem>
+                    <GridItem columnSpan={3}>
+                        <KPICard title="Connected" value={connectedUsersCount} icon={<StatsIcon color={'#FB923C'} />} />
+                    </GridItem>
+                    <GridItem columnSpan={3}>
+                        <KPICard title="New users" value={newUsersCount} icon={<StatsIcon color={'#FB923C'} />} />
+                    </GridItem>
+                </Grid>
                 <Grid>
                     <GridItem columnSpan={12} rowSpan={3}>
                         <Card title="All users">
