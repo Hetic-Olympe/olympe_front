@@ -5,8 +5,10 @@ import useFetch from "@/hooks/useFetch";
 import { useCallback, useEffect, useState } from "react";
 import styles from "./adminCountries.module.scss";
 import { Grid, GridItem } from "@/components/ui/Grid/Grid";
+import { SearchInput } from "@/components/ui/Inputs/Search/SearchInput";
 import { Card } from "@/components/ui/Card/Card";
 import ReactCountryFlag from "react-country-flag";
+import { useSearchParams } from "react-router-dom";
 
 export interface Continent {
   id: number;
@@ -21,20 +23,65 @@ export interface Country {
   continent: Continent;
 }
 
+export interface CountryFilters {
+  name: string | null;
+  continentId: string | null;
+}
+
 export default function AdminCountries() {
   const { toast } = useToast();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [countries, setCountries] = useState<Country[]>([]);
+  const [filters, setFilters] = useState<CountryFilters>({
+    name: searchParams.get("name"),
+    continentId: searchParams.get("contientId"),
+  });
+  const [apiParamsString, setApiParamsString] = useState("");
   const { isLoading, fetchData: fetchCountries } = useFetch(
-    "/admin/api/countries"
+    `/admin/api/countries${apiParamsString}`
   );
 
   const { fetchData: changeCountryParticipation } = useFetch(
     "/admin/api/countries/update"
   );
 
+  const handleSearch = useCallback((name: string) => {
+    if (name) {
+      setFilters((previFilter) => ({ ...previFilter, name }));
+    } else {
+      setFilters((previFilter) => ({ ...previFilter, name: null }));
+    }
+  }, []);
+
+  const updateParams = useCallback(() => {
+    let paramsString = "";
+    const entriesParams = Object.entries(filters);
+    const newQueryParams = new URLSearchParams();
+    if (entriesParams.some((params) => params !== null)) {
+      paramsString += "?";
+      const entriesParamsString: string[] = [];
+      for (const [key, value] of entriesParams) {
+        if (value) {
+          console.log("VALUE", value);
+          const entryString = `${key}=${value}`;
+          entriesParamsString.push(entryString);
+          newQueryParams.set(key, `${value}`);
+        }
+      }
+      paramsString += entriesParamsString.join("&");
+    }
+    setApiParamsString(paramsString);
+    setSearchParams(newQueryParams);
+  }, [filters, setSearchParams]);
+
+  useEffect(() => {
+    updateParams();
+  }, [updateParams]);
+
   const getCountries = useCallback(async () => {
     try {
       const { data } = await fetchCountries();
+
       if (data) {
         setCountries(data);
       }
@@ -49,7 +96,7 @@ export default function AdminCountries() {
 
   useEffect(() => {
     getCountries();
-  }, [getCountries]);
+  }, [getCountries, searchParams]);
 
   const handleParticipation = async (id: number): Promise<void> => {
     try {
@@ -80,7 +127,11 @@ export default function AdminCountries() {
         title="Manage all countries"
         subtitle="Handle countries's participations"
       />
+
       <PageTemplate>
+        <div className={styles.search_section}>
+          <SearchInput onSearch={handleSearch} initValue={filters.name || ""} />
+        </div>
         {isLoading ? (
           "LOADING ..."
         ) : (
@@ -110,7 +161,7 @@ export default function AdminCountries() {
                           </label>
                         </div>
                       ))
-                    : "No data found"}
+                    : "No countries found"}
                 </div>
               </Card>
             </GridItem>
