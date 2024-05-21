@@ -4,8 +4,8 @@ import { ProtectedRoute } from "./components/routing/ProtectedRoute";
 
 import Signin from "./components/pages/singin/Signin";
 import Signup from "./components/pages/singup/Signup";
-import { AdminRouter } from "./components/routing/AdminRouter";
-import { UserRouter } from "./components/routing/UserRouter";
+import { AdminRouter } from "./components/routing/admin/AdminRouter";
+import { UserRouter } from "./components/routing/user/UserRouter";
 import { Toaster } from "./components/ui/toaster";
 
 function App() {

@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router-dom";
-import Nav from "../sections/Nav/Nav";
+import Nav from "../../sections/Nav/Nav";
 import {
   HomeIcon,
   CalendarIcon,
@@ -8,11 +8,11 @@ import {
   CommunityIcon,
   MedalsIcon,
   CountriesIcon,
-} from "../icons/icons";
+} from "../../icons/icons";
 import { useCreatePageLink } from "@/hooks/useCreatePageLink";
-import AdminDashboard from "../pages/admin/dashboard/AdminDashboard";
-import NotFound from "../sections/NotFound/NotFound";
-import AdminCountries from "../pages/admin/countries/AdminCountries";
+import NotFound from "../../sections/NotFound/NotFound";
+import AdminCountries from "../../pages/admin/countries/AdminCountries";
+import AdminDashboardRouter from "./AdminDashboardRouter";
 
 const PRIMARY_ACTIVE_COLOR = "#FB923C";
 const DEFAULT_COLOR = "#7295b0";
@@ -40,7 +40,7 @@ export function AdminRouter() {
 
       <aside className="pageContainer">
         <Routes>
-          <Route path="/" element={<AdminDashboard />} />
+          <Route path="/*" element={<AdminDashboardRouter />} />
           <Route path="/events" element={<div>Events Page</div>} />
           <Route path="/countries" element={<AdminCountries />} />
           <Route path="/athletes" element={<div>Athletes Page</div>} />
