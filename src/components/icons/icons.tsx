@@ -6,3 +6,6 @@ export { default as CommunityIcon } from './CommunityIcon';
 export { default as CountriesIcon } from './CountriesIcon';
 export { default as MedalsIcon } from './MedalsIcon';
 export { default as SportIcon } from './SportIcon';
+export { default as TrashIcon } from './TrashIcon';
+export { default as EditIcon } from './EditIcon';
+export { default as ArrowSortIcon } from './ArrowSortIcon';
