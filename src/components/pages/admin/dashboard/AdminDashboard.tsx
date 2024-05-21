@@ -7,6 +7,7 @@ import { useState, useEffect, useMemo } from "react";
 import useFetch from "@/hooks/useFetch";
 import { useToast } from "@/components/ui/use-toast";
 import styles from "./adminDashboard.module.scss";
+import { Link } from "react-router-dom";
 
 export interface User {
     id: string;
@@ -82,13 +83,12 @@ export default function AdminDashboard() {
                                 {users.length === 0 && <p>No users found</p>}
                                 {
                                     users.map((user) => (
-                                        <div className={styles.usersList__item} key={user.id}>
+                                        <Link className={styles.usersList__item} key={user.id} to={`/admin/user/${user.id}`}>
                                             <p>Name : {user.firstname} {user.lastname}</p>
                                             <p>Email : {user.email}</p>
                                             <p>Status : {user.isConnected ? "Connected" : "Not connected"}</p>
                                             <p>Role : {user.role.label}</p>
-                                        </div>
-
+                                        </Link>
                                     ))
                                 }
                             </div>
@@ -96,7 +96,7 @@ export default function AdminDashboard() {
 
                     </GridItem>
                 </Grid>
-            </PageTemplate>
+            </PageTemplate >
         </>
     )
 }

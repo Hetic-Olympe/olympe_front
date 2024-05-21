@@ -1,7 +1,7 @@
 import { Route, Routes } from "react-router-dom";
-import AdminDashboard from "../../pages/admin/dashboard/AdminDashboard";
 import NotFound from "../../sections/NotFound/NotFound";
-import UserEdit from "../../pages/user/dashboard/UserEdit";
+import AdminDashboard from "@/components/pages/admin/dashboard/AdminDashboard";
+import UserEdit from "@/components/pages/admin/dashboard/AdminUserEdit/UserEdit";
 
 export default function AdminDashboardRouter() {
     return (
