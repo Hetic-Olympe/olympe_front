@@ -19,11 +19,12 @@ export const SearchInput = ({ onSearch, initValue }: props) => {
   }, [input, onSearch]);
 
   return (
-    <Input
-      placeholder="Search a country"
-      className={styles.searchInput}
-      value={input}
-      onChange={(e) => onChange(e.target.value)}
-    />
+    <div className={styles.search_input}>
+      <Input
+        placeholder="Search a country"
+        value={input}
+        onChange={(e) => onChange(e.target.value)}
+      />
+    </div>
   );
 };
