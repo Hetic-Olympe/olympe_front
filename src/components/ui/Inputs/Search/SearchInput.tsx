@@ -18,14 +18,10 @@ export const SearchInput = ({ onSearch, initValue }: props) => {
     onSearch(input);
   }, [input, onSearch]);
 
-  useEffect(() => {
-    console.log("INIT INPUT", initValue);
-  }, [initValue]);
-
   return (
     <Input
       placeholder="Search a country"
-      className={styles.search_input}
+      className={styles.searchInput}
       value={input}
       onChange={(e) => onChange(e.target.value)}
     />

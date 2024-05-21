@@ -78,10 +78,6 @@ export default function AdminCountries() {
     updateParams();
   }, [updateParams]);
 
-  useEffect(() => {
-    console.log("FILTERS", filters);
-  }, [filters]);
-
   const getCountries = useCallback(async () => {
     try {
       const { data } = await fetchCountries();
@@ -165,7 +161,7 @@ export default function AdminCountries() {
                           </label>
                         </div>
                       ))
-                    : "No data found"}
+                    : "No countries found"}
                 </div>
               </Card>
             </GridItem>
