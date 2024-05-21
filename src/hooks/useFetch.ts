@@ -5,7 +5,7 @@ const useFetch = (path: string) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
   const { auth } = useAuth();
-  const baseUrl = "http://localhost:5001/api";
+  const baseUrl = "http://localhost:5001";
 
   const fetchWithAuth = useCallback(
     async (options: RequestInit = {}) => {

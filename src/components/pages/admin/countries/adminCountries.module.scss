@@ -1,0 +1,17 @@
+.row {
+  display: flex;
+  justify-content: space-between;
+
+  &__toggle {
+    display: flex;
+    gap: 8px;
+
+    &__checkbox {
+      cursor: pointer;
+    }
+  }
+}
+
+.search_section {
+  margin-bottom: 32px;
+}
