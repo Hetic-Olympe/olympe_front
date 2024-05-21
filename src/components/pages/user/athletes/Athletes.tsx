@@ -10,7 +10,11 @@ import PageTemplate from "@/components/sections/PageTeample/PageTemplate";
 export default function Athletes() {
   const { toast } = useToast();
   const [athletes, setAthletes] = useState<Athlete[]>([]);
-  const { isLoading, error, fetchData: fetchAthletes } = useFetch("/athletes");
+  const {
+    isLoading,
+    error,
+    fetchData: fetchAthletes,
+  } = useFetch("/api/athletes");
 
   const getAthletes = useCallback(async () => {
     try {
