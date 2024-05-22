@@ -6,9 +6,11 @@ import { useCallback, useEffect, useState } from "react";
 import styles from "./adminCountries.module.scss";
 import { Grid, GridItem } from "@/components/ui/Grid/Grid";
 import { SearchInput } from "@/components/ui/Inputs/Search/SearchInput";
+import { SelectInput } from "@/components/ui/Inputs/Select/SelectInput";
 import { Card } from "@/components/ui/Card/Card";
 import ReactCountryFlag from "react-country-flag";
 import { useSearchParams } from "react-router-dom";
+import { continentItems } from "@/types/SelectItems";
 
 export interface Continent {
   id: number;
@@ -34,10 +36,10 @@ export default function AdminCountries() {
   const [countries, setCountries] = useState<Country[]>([]);
   const [filters, setFilters] = useState<CountryFilters>({
     name: searchParams.get("name"),
-    continentId: searchParams.get("contientId"),
+    continentId: searchParams.get("continentId"),
   });
   const [apiParamsString, setApiParamsString] = useState("");
-  const { isLoading, fetchData: fetchCountries } = useFetch(
+  const { isLoading: loadingFetchData, fetchData: fetchCountries } = useFetch(
     `/admin/api/countries${apiParamsString}`
   );
 
@@ -50,6 +52,14 @@ export default function AdminCountries() {
       setFilters((previFilter) => ({ ...previFilter, name }));
     } else {
       setFilters((previFilter) => ({ ...previFilter, name: null }));
+    }
+  }, []);
+
+  const handleSelectContinent = useCallback((continentId: string) => {
+    if (continentId && continentId !== "0") {
+      setFilters((previFilter) => ({ ...previFilter, continentId }));
+    } else {
+      setFilters((previFilter) => ({ ...previFilter, continentId: null }));
     }
   }, []);
 
@@ -96,7 +106,7 @@ export default function AdminCountries() {
 
   useEffect(() => {
     getCountries();
-  }, [getCountries, searchParams]);
+  }, [getCountries]);
 
   const handleParticipation = async (id: number): Promise<void> => {
     try {
@@ -127,12 +137,20 @@ export default function AdminCountries() {
         title="Manage all countries"
         subtitle="Handle countries's participations"
       />
-
       <PageTemplate>
         <div className={styles.search_section}>
           <SearchInput onSearch={handleSearch} initValue={filters.name || ""} />
         </div>
-        {isLoading ? (
+        <div className={styles.filter_section}>
+          <SelectInput
+            onSelect={handleSelectContinent}
+            initValue={filters.continentId || "0"}
+            placeholder="Select a continent"
+            label="Continents"
+            items={continentItems}
+          />
+        </div>
+        {loadingFetchData ? (
           "LOADING ..."
         ) : (
           <Grid>
