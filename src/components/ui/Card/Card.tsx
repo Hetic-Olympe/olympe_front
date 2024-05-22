@@ -1,9 +1,10 @@
 import React from "react";
 import styles from "./Card.module.scss";
 import { NavLink } from "react-router-dom";
-
+import { LoadingSpinner } from "../loadingSpinner";
 interface CardProps {
     title: string;
+    isLoading?: boolean;
     children: React.ReactNode;
     link?: string;
     padding?: number;
@@ -16,7 +17,7 @@ interface KPICardProps {
     icon: React.ReactNode;
 }
 
-export const Card = ({ title, children, link, padding = 32, minHeight = 0 }: CardProps) => {
+export const Card = ({ title, isLoading = false, children, link, padding = 32, minHeight = 0 }: CardProps) => {
     return (
         <div className={styles.card} style={{ minHeight }}>
             <div className={styles.card__header}>
@@ -24,7 +25,7 @@ export const Card = ({ title, children, link, padding = 32, minHeight = 0 }: Car
                 {link && <NavLink to={link} className={styles.card__header__link}>View all</NavLink>}
             </div>
             <div className={styles.card__content} style={{ padding: `0 ${padding}px ${padding}px ${padding}px` }}>
-                {children}
+                {isLoading ? <LoadingSpinner className={styles.card__loadingSpinner} size="l" /> : children}
             </div>
         </div>
     );
