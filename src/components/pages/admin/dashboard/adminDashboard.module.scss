@@ -1,0 +1,9 @@
+.usersList {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  &__item {
+    display: flex;
+    gap: 24px;
+  }
+}

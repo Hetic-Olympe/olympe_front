@@ -12,7 +12,7 @@ interface CardProps {
 
 interface KPICardProps {
     title: string;
-    value: string;
+    value: number | string;
     icon: React.ReactNode;
 }
 
