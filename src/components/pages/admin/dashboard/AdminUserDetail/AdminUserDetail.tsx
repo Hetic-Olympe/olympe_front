@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import useFetch from "@/hooks/useFetch";
 import Header from '@/components/sections/Header/Header';
