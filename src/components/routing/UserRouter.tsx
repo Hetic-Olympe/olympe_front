@@ -6,6 +6,7 @@ import { HomeIcon, CalendarIcon, StatsIcon, AthleteIcon, CommunityIcon } from ".
 import { useCreatePageLink } from "@/hooks/useCreatePageLink"
 import NotFound from "../sections/NotFound/NotFound"
 import UserDashboard from "../pages/user/dashboard/UserDashboard"
+import Athletes from "../pages/user/athletes/Athletes"
 
 const PRIMARY_ACTIVE_COLOR = "#23B2F5";
 const DEFAULT_COLOR = "#7295b0"
@@ -28,6 +29,7 @@ export function UserRouter() {
             <div className="pageContainer">
                 <Routes>
                     <Route path="/" element={<UserDashboard />} />
+                    <Route path="/athletes" element={<Athletes />} />
                     <Route path="data/" element={<div>user data</div>} />
                     <Route
                         path="profile/"
