@@ -41,7 +41,7 @@ const BottomNav: FC = () => {
     const { isAuthenticated, signOut } = useAuth();
 
     const pages: Page[] = isAuthenticated ? [
-        { to: "/logout", title: "Logout", onClick: signOut }
+        { to: "./#", title: "Logout", onClick: signOut }
     ] : [
         { to: "/signin", title: "Login" },
     ];
