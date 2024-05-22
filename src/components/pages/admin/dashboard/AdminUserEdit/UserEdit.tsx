@@ -98,7 +98,7 @@ export default function UserEdit() {
         };
 
         getUsers();
-    }, [fetchUser, toast]);
+    }, [form, fetchUser, toast]);
 
     const onSubmit = useCallback(async (formData: FormData) => {
         try {

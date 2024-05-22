@@ -5,8 +5,12 @@ import useFetch from "@/hooks/useFetch";
 import { useCallback, useEffect, useState } from "react";
 import styles from "./adminCountries.module.scss";
 import { Grid, GridItem } from "@/components/ui/Grid/Grid";
+import { SearchInput } from "@/components/ui/Inputs/Search/SearchInput";
+import { SelectInput } from "@/components/ui/Inputs/Select/SelectInput";
 import { Card } from "@/components/ui/Card/Card";
 import ReactCountryFlag from "react-country-flag";
+import { useSearchParams } from "react-router-dom";
+import { continentItems } from "@/types/SelectItems";
 
 export interface Continent {
   id: number;
@@ -21,20 +25,73 @@ export interface Country {
   continent: Continent;
 }
 
+export interface CountryFilters {
+  name: string | null;
+  continentId: string | null;
+}
+
 export default function AdminCountries() {
   const { toast } = useToast();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [countries, setCountries] = useState<Country[]>([]);
-  const { isLoading, fetchData: fetchCountries } = useFetch(
-    "/admin/api/countries"
+  const [filters, setFilters] = useState<CountryFilters>({
+    name: searchParams.get("name"),
+    continentId: searchParams.get("continentId"),
+  });
+  const [apiParamsString, setApiParamsString] = useState("");
+  const { isLoading: loadingFetchData, fetchData: fetchCountries } = useFetch(
+    `/admin/api/countries${apiParamsString}`
   );
 
   const { fetchData: changeCountryParticipation } = useFetch(
     "/admin/api/countries/update"
   );
 
+  const handleSearch = useCallback((name: string) => {
+    if (name) {
+      setFilters((previFilter) => ({ ...previFilter, name }));
+    } else {
+      setFilters((previFilter) => ({ ...previFilter, name: null }));
+    }
+  }, []);
+
+  const handleSelectContinent = useCallback((continentId: string) => {
+    if (continentId && continentId !== "0") {
+      setFilters((previFilter) => ({ ...previFilter, continentId }));
+    } else {
+      setFilters((previFilter) => ({ ...previFilter, continentId: null }));
+    }
+  }, []);
+
+  const updateParams = useCallback(() => {
+    let paramsString = "";
+    const entriesParams = Object.entries(filters);
+    const newQueryParams = new URLSearchParams();
+    if (entriesParams.some((params) => params !== null)) {
+      paramsString += "?";
+      const entriesParamsString: string[] = [];
+      for (const [key, value] of entriesParams) {
+        if (value) {
+          console.log("VALUE", value);
+          const entryString = `${key}=${value}`;
+          entriesParamsString.push(entryString);
+          newQueryParams.set(key, `${value}`);
+        }
+      }
+      paramsString += entriesParamsString.join("&");
+    }
+    setApiParamsString(paramsString);
+    setSearchParams(newQueryParams);
+  }, [filters, setSearchParams]);
+
+  useEffect(() => {
+    updateParams();
+  }, [updateParams]);
+
   const getCountries = useCallback(async () => {
     try {
       const { data } = await fetchCountries();
+
       if (data) {
         setCountries(data);
       }
@@ -81,7 +138,19 @@ export default function AdminCountries() {
         subtitle="Handle countries's participations"
       />
       <PageTemplate>
-        {isLoading ? (
+        <div className={styles.search_section}>
+          <SearchInput onSearch={handleSearch} initValue={filters.name || ""} />
+        </div>
+        <div className={styles.filter_section}>
+          <SelectInput
+            onSelect={handleSelectContinent}
+            initValue={filters.continentId || "0"}
+            placeholder="Select a continent"
+            label="Continents"
+            items={continentItems}
+          />
+        </div>
+        {loadingFetchData ? (
           "LOADING ..."
         ) : (
           <Grid>
@@ -110,7 +179,7 @@ export default function AdminCountries() {
                           </label>
                         </div>
                       ))
-                    : "No data found"}
+                    : "No countries found"}
                 </div>
               </Card>
             </GridItem>
