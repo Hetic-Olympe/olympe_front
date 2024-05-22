@@ -60,7 +60,7 @@ export default function AdminUserDetail() {
                             </Card>
                         </GridItem>
                         <GridItem columnSpan={6} rowSpan={1}>
-                            <Card title="Personal Information" isLoading={userIsLoading} minHeight={640}>
+                            <Card title="Personal Information" isLoading={userIsLoading} minHeight={600}>
                                 <AdminUserInformationForm user={user} fetchUser={fetchUser} syncUser={setUser} />
                             </Card>
                         </GridItem>
