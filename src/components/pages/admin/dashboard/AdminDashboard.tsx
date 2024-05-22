@@ -9,6 +9,10 @@ import { useToast } from "@/components/ui/use-toast";
 import styles from "./adminDashboard.module.scss";
 import { Link } from "react-router-dom";
 
+export enum RoleLabel {
+    USER = "user",
+    ADMIN = "admin"
+}
 export interface User {
     id: string;
     createdAt: string;
@@ -20,7 +24,7 @@ export interface User {
     isConnected: boolean;
     role: {
         id: number;
-        label: string;
+        label: RoleLabel;
     };
     interests: string[];
     likes: string[];
