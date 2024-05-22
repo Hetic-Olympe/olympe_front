@@ -1,4 +1,6 @@
 .header {
+  position: sticky;
+  top: 0;
   padding: 24px 32px;
   border-bottom: 1px var(--stroke-color) solid;
   display: flex;
