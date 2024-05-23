@@ -30,7 +30,7 @@ export const AuthProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }
 
   const signIn = (username: string, role: string, token: string) => {
     setAuth({ username, role, token });
-    AUTH_COOKIE_KEYS.forEach(key => Cookies.set(key, eval(key), { secure: true, sameSite: 'Strict', httpOnly: true }));
+    AUTH_COOKIE_KEYS.forEach(key => Cookies.set(key, eval(key), { expires: 7, secure: true, sameSite: 'Strict' }));
   };
 
   const signOut = () => {
