@@ -26,7 +26,7 @@ import { User, RoleLabel } from "../AdminDashboard";
 
 interface AdminUserInformationFormProps {
     user: User | null;
-    fetchUser: (options?: RequestInit) => Promise<{ data: any; }>;
+    fetchUser: (options?: RequestInit) => Promise<{ data: User; }>;
     syncUser: (updatedUser: User) => void;
 }
 
@@ -96,7 +96,7 @@ export default function AdminUserInformationForm({ user, fetchUser, syncUser }: 
                 description: `Error: ${err instanceof Error ? err.message : err}`,
             });
         }
-    }, [fetchUser, toast]);
+    }, [fetchUser, toast, syncUser]);
 
     return (
         <Form {...form} >
