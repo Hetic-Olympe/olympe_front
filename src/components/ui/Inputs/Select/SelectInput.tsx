@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -28,18 +28,18 @@ export const SelectInput = ({
 }: props) => {
   const [input, setInput] = useState(initValue);
 
-  const onChange = (value: string) => {
-    setInput(value);
-  };
-
-  useEffect(() => {
-    onSelect(input);
-  }, [input, onSelect]);
+  const onChange = useCallback(
+    (value: string) => {
+      setInput(value);
+      onSelect(value);
+    },
+    [onSelect]
+  );
 
   return (
     <div className={styles.filter}>
       <Label>{label}</Label>
-      <Select value={initValue} onValueChange={(value) => onChange(value)}>
+      <Select value={input} onValueChange={(value) => onChange(value)}>
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
