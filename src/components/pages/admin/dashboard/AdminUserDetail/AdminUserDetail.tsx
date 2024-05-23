@@ -8,7 +8,7 @@ import { Grid, GridItem } from '@/components/ui/Grid/Grid';
 import { useParams } from 'react-router-dom';
 import { User } from '../AdminDashboard';
 import AdminUserInformationForm from "./AdminUserInformationForm";
-
+import AdminUserInterests from "./AdminUserInterests";
 
 export default function AdminUserDetail() {
     const { id } = useParams<{ id: string }>();
@@ -50,8 +50,8 @@ export default function AdminUserDetail() {
                             </Card>
                         </GridItem>
                         <GridItem columnSpan={6} rowSpan={1}>
-                            <Card title="Interests" minHeight={173}>
-                                content
+                            <Card title="Interests">
+                                <AdminUserInterests />
                             </Card>
                         </GridItem>
                         <GridItem columnSpan={6} rowSpan={2}>
