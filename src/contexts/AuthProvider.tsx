@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, useMemo } from 'react';
 import Cookies from 'js-cookie'
 
 interface AuthDataType {
@@ -19,12 +19,18 @@ const AUTH_COOKIE_KEYS = ['username', 'role', 'token'];
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
-  const initialAuthState = {
-    username: Cookies.get('username') || null,
-    role: Cookies.get('role') || null,
-    token: Cookies.get('token') || null,
-  };
+export const AuthProvider: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => {
+
+  const username = Cookies.get('username');
+  const role = Cookies.get('role');
+  const token = Cookies.get('token');
+
+  const initialAuthState = useMemo(() => ({
+    username: username || null,
+    role: role || null,
+    token: token || null,
+  }), [username, role, token]);
+
 
   const [auth, setAuth] = useState<AuthDataType | null>(initialAuthState.token ? initialAuthState : null);
 
@@ -40,7 +46,7 @@ export const AuthProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }
 
   useEffect(() => {
     if (!auth && initialAuthState.token) setAuth(initialAuthState);
-  }, []);
+  }, [auth, initialAuthState]);
 
   return (
     <AuthContext.Provider value={{ isAuthenticated: !!auth, role: auth?.role ?? null, auth, signIn, signOut }}>
