@@ -11,6 +11,8 @@ import { Card } from "@/components/ui/Card/Card";
 import ReactCountryFlag from "react-country-flag";
 import { useSearchParams } from "react-router-dom";
 import { continentItems } from "@/types/SelectItems";
+import { PaginationFilters } from "@/types/Pagination";
+import { PaginationTable } from "@/components/ui/Pagination/PaginationTable";
 
 export interface Continent {
   id: number;
@@ -25,7 +27,7 @@ export interface Country {
   continent: Continent;
 }
 
-export interface CountryFilters {
+export interface CountryFilters extends PaginationFilters {
   name: string | null;
   continentId: string | null;
 }
@@ -34,32 +36,43 @@ export default function AdminCountries() {
   const { toast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const [countries, setCountries] = useState<Country[]>([]);
+  const [totalPages, setTotalPages] = useState(0);
   const [filters, setFilters] = useState<CountryFilters>({
     name: searchParams.get("name"),
     continentId: searchParams.get("continentId"),
+    page: parseInt(searchParams.get("page") as string) || 1,
+    limit: 10,
   });
-  const [apiParamsString, setApiParamsString] = useState("");
+  const [apiParamsString, setApiParamsString] = useState(
+    `?page=${filters.page}&limit=${filters.limit}`
+  );
   const { isLoading: loadingFetchData, fetchData: fetchCountries } = useFetch(
     `/admin/api/countries${apiParamsString}`
   );
 
   const { fetchData: changeCountryParticipation } = useFetch(
-    "/admin/api/countries/update"
+    "/admin/api/countries/update/participation"
   );
 
   const handleSearch = useCallback((name: string) => {
+    console.log("handleSearch called with name:", name);
     if (name) {
-      setFilters((previFilter) => ({ ...previFilter, name }));
+      setFilters((previFilter) => ({ ...previFilter, name, page: 1 }));
     } else {
-      setFilters((previFilter) => ({ ...previFilter, name: null }));
+      setFilters((previFilter) => ({ ...previFilter, name: null, page: 1 }));
     }
   }, []);
 
   const handleSelectContinent = useCallback((continentId: string) => {
+    console.log("handleSelectContinent called with continentId:", continentId);
     if (continentId && continentId !== "0") {
-      setFilters((previFilter) => ({ ...previFilter, continentId }));
+      setFilters((previFilter) => ({ ...previFilter, continentId, page: 1 }));
     } else {
-      setFilters((previFilter) => ({ ...previFilter, continentId: null }));
+      setFilters((previFilter) => ({
+        ...previFilter,
+        continentId: null,
+        page: 1,
+      }));
     }
   }, []);
 
@@ -72,10 +85,11 @@ export default function AdminCountries() {
       const entriesParamsString: string[] = [];
       for (const [key, value] of entriesParams) {
         if (value) {
-          console.log("VALUE", value);
           const entryString = `${key}=${value}`;
           entriesParamsString.push(entryString);
-          newQueryParams.set(key, `${value}`);
+          if (key !== "limit") {
+            newQueryParams.set(key, `${value}`);
+          }
         }
       }
       paramsString += entriesParamsString.join("&");
@@ -85,6 +99,7 @@ export default function AdminCountries() {
   }, [filters, setSearchParams]);
 
   useEffect(() => {
+    console.log("useEffect called to update params");
     updateParams();
   }, [updateParams]);
 
@@ -93,7 +108,8 @@ export default function AdminCountries() {
       const { data } = await fetchCountries();
 
       if (data) {
-        setCountries(data);
+        setCountries(data.countries);
+        setTotalPages(data.totalPages);
       }
     } catch (err) {
       toast({
@@ -105,6 +121,7 @@ export default function AdminCountries() {
   }, [fetchCountries, toast]);
 
   useEffect(() => {
+    console.log("useEffect called to fetch countries");
     getCountries();
   }, [getCountries]);
 
@@ -183,6 +200,26 @@ export default function AdminCountries() {
                 </div>
               </Card>
             </GridItem>
+            <PaginationTable
+              onPrevious={() => {
+                if (filters.page - 1 !== 0) {
+                  setFilters((previousFilters) => ({
+                    ...previousFilters,
+                    page: previousFilters.page - 1,
+                  }));
+                }
+              }}
+              onNext={() => {
+                if (filters.page + 1 <= totalPages) {
+                  setFilters((previousFilters) => ({
+                    ...previousFilters,
+                    page: previousFilters.page + 1,
+                  }));
+                }
+              }}
+              page={filters.page}
+              totalPages={totalPages}
+            />
           </Grid>
         )}
       </PageTemplate>
