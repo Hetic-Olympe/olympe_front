@@ -6,7 +6,7 @@ type Options = {
     label: string;
 };
 
-export default function AdminUserInterests() {
+export default function UserInterests() {
 
     // @TODO Replace this with a call to the API
     const options: Options[] = [

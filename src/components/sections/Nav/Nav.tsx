@@ -4,31 +4,22 @@ import { useAuth } from "@/contexts/AuthProvider";
 import logo from "@/assets/images/logo.png";
 import styles from "./nav.module.scss";
 import clsx from "clsx";
-
 import { LogOut, User } from "lucide-react"
-
 import {
     Avatar,
     AvatarFallback,
-    AvatarImage,
 } from "@/components/ui/avatar"
-
 import { Button } from "@/components/ui/button"
 import {
     DropdownMenu,
     DropdownMenuContent,
-    DropdownMenuGroup,
     DropdownMenuItem,
     DropdownMenuLabel,
-    DropdownMenuPortal,
     DropdownMenuSeparator,
-    DropdownMenuShortcut,
-    DropdownMenuSub,
-    DropdownMenuSubContent,
-    DropdownMenuSubTrigger,
     DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import { Link } from "react-router-dom";
+
 interface Page {
     to: string;
     title: string;
@@ -80,7 +71,7 @@ const BottomNav: FC = () => {
                         <Avatar>
                             {/* <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" /> */}
                             <AvatarFallback>{user?.username?.[0]}</AvatarFallback>
-                         </Avatar>
+                        </Avatar>
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="center">

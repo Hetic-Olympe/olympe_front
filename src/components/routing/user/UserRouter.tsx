@@ -1,17 +1,19 @@
 import { Route, Routes } from "react-router-dom"
 import { ProtectedRoute } from "../ProtectedRoute"
-import Profile from "../../pages/user/profile/Profile"
+import UserDetail from "@/components/pages/common/userDetail/UserDetail"
 import Nav from "../../sections/Nav/Nav"
 import { HomeIcon, CalendarIcon, StatsIcon, AthleteIcon, CommunityIcon } from "../../icons/icons"
 import { useCreatePageLink } from "@/hooks/useCreatePageLink"
 import NotFound from "@/components/sections/NotFound/NotFound"
 import UserDashboard from "@/components/pages/user/dashboard/UserDashboard"
 import Athletes from "@/components/pages/user/athletes/Athletes"
+import { useAuth } from "@/contexts/AuthProvider"
 
 const PRIMARY_ACTIVE_COLOR = "#23B2F5";
 const DEFAULT_COLOR = "#7295b0"
 
 export function UserRouter() {
+    const { user } = useAuth();
 
     const createPageLink = useCreatePageLink("", PRIMARY_ACTIVE_COLOR, DEFAULT_COLOR);
 
@@ -35,7 +37,7 @@ export function UserRouter() {
                         path="profile/"
                         element={
                             <ProtectedRoute allowedRoles={["user", "admin"]}>
-                                <Profile />
+                                <UserDetail id={user?.id} />
                             </ProtectedRoute>
                         }
                     />

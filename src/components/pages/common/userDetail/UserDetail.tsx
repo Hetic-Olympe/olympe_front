@@ -6,16 +6,23 @@ import PageTemplate from '@/components/sections/PageTeample/PageTemplate';
 import { Card } from '@/components/ui/Card/Card';
 import { Grid, GridItem } from '@/components/ui/Grid/Grid';
 import { useParams } from 'react-router-dom';
-import { User } from '../AdminDashboard';
-import AdminUserInformationForm from "./AdminUserInformationForm";
-import AdminUserInterests from "./AdminUserInterests";
+import { User } from '../../admin/dashboard/AdminDashboard';
+import UserInformationForm from "./UserInformationForm";
+import UserInterests from "./UserInterests";
 
-export default function AdminUserDetail() {
-    const { id } = useParams<{ id: string }>();
+interface AdminUserDetailProps {
+    id?: string | null | undefined;
+}
+
+export default function UserDetail({ id: propId = null }: AdminUserDetailProps) {
+    const { id: urlId } = useParams<{ id: string }>();
+    const id = propId ?? urlId;
+    const isAdmin = !propId;
+
     const { toast } = useToast();
     const [user, setUser] = useState<User | null>(null);
     const { isLoading: userIsLoading, fetchData: fetchUser } = useFetch(
-        `/admin/api/users/${id}`
+        !isAdmin ? '/api/users/me' : `/admin/api/users/${id}`
     );
 
     useEffect(() => {
@@ -51,7 +58,7 @@ export default function AdminUserDetail() {
                         </GridItem>
                         <GridItem columnSpan={6} rowSpan={1}>
                             <Card title="Interests">
-                                <AdminUserInterests />
+                                <UserInterests />
                             </Card>
                         </GridItem>
                         <GridItem columnSpan={6} rowSpan={2}>
@@ -60,8 +67,8 @@ export default function AdminUserDetail() {
                             </Card>
                         </GridItem>
                         <GridItem columnSpan={6} rowSpan={1}>
-                            <Card title="Personal Information" isLoading={userIsLoading} minHeight={600}>
-                                <AdminUserInformationForm user={user} fetchUser={fetchUser} syncUser={setUser} />
+                            <Card title="Personal Information" isLoading={userIsLoading} minHeight={400}>
+                                <UserInformationForm user={user} fetchUser={fetchUser} syncUser={setUser} isAdmin={isAdmin} />
                             </Card>
                         </GridItem>
                     </Grid>

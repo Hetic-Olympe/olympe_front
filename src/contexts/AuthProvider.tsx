@@ -15,6 +15,7 @@ interface AuthContextType {
   user: AuthDataType | null;
   signIn: (username: string, email: string, role: string, token: string, id: string) => void;
   signOut: () => void;
+  updateUserCookies: (username: string, email: string) => void;
 }
 
 const AUTH_COOKIE_KEYS = ['username', 'role', 'token', 'id'];
@@ -40,7 +41,7 @@ export const AuthProvider: React.FC<React.PropsWithChildren<unknown>> = ({ child
 
   const [user, setUser] = useState<AuthDataType | null>(initialAuthState.token ? initialAuthState : null);
 
-  const signIn = (username: string, email: string,  role: string, token: string, id: string) => {
+  const signIn = (username: string, email: string, role: string, token: string, id: string) => {
     setUser({ username, email, role, token, id });
     AUTH_COOKIE_KEYS.forEach(key => Cookies.set(key, eval(key), { expires: 7, secure: true, sameSite: 'Strict' }));
   };
@@ -50,12 +51,25 @@ export const AuthProvider: React.FC<React.PropsWithChildren<unknown>> = ({ child
     AUTH_COOKIE_KEYS.forEach(key => Cookies.remove(key));
   };
 
+  const updateUserCookies = (username: string, email: string) => {
+    setUser(prevState => prevState ? { ...prevState, username, email } : null);
+    const updatedValues: { [key: string]: string } = { username, email };
+    ['username', 'email'].forEach(key => Cookies.set(key, updatedValues[key], { expires: 7, secure: true, sameSite: 'Strict' }));
+  };
+
   useEffect(() => {
     if (!user && initialAuthState.token) setUser(initialAuthState);
   }, [user, initialAuthState]);
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated: !!user, role: user?.role ?? null, user, signIn, signOut }}>
+    <AuthContext.Provider value={{
+      isAuthenticated: !!user,
+      role: user?.role ?? null,
+      user,
+      signIn,
+      signOut,
+      updateUserCookies
+    }}>
       {children}
     </AuthContext.Provider>
   );
