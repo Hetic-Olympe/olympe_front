@@ -68,7 +68,7 @@ export default function Signin() {
 
       if (!data) return;
 
-      signIn(values.email, data.role, data.token);
+      signIn(data.username, values.email, data.role, data.token, data.id);
 
       toast({
         title: "Sign in successful",

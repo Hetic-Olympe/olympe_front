@@ -4,7 +4,7 @@ import { useCallback, useState } from "react";
 const useFetch = (path: string) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
-  const { auth } = useAuth();
+  const { user } = useAuth();
   const baseUrl = "http://localhost:5001";
 
   const fetchWithAuth = useCallback(
@@ -16,7 +16,7 @@ const useFetch = (path: string) => {
           ...options,
           headers: {
             "Content-Type": "application/json",
-            ...(auth?.token ? { Authorization: `Bearer ${auth.token}` } : {}),
+            ...(user?.token ? { Authorization: `Bearer ${user.token}` } : {}),
             ...options.headers,
           },
         });
@@ -35,7 +35,7 @@ const useFetch = (path: string) => {
         setIsLoading(false);
       }
     },
-    [auth?.token, path]
+    [user?.token, path]
   );
 
   return { isLoading, error, fetchData: fetchWithAuth };
