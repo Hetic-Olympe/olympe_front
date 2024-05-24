@@ -9,10 +9,10 @@ import { SearchInput } from "@/components/ui/Inputs/Search/SearchInput";
 import { SelectInput } from "@/components/ui/Inputs/Select/SelectInput";
 import { Card } from "@/components/ui/Card/Card";
 import ReactCountryFlag from "react-country-flag";
-import { useSearchParams } from "react-router-dom";
 import { continentItems } from "@/types/SelectItems";
 import { PaginationFilters } from "@/types/Pagination";
 import { PaginationTable } from "@/components/ui/Pagination/PaginationTable";
+import useFiltersAndPagination from "@/hooks/useFiltersAndPagination";
 
 export interface Continent {
   id: number;
@@ -34,18 +34,20 @@ export interface CountryFilters extends PaginationFilters {
 
 export default function AdminCountries() {
   const { toast } = useToast();
-  const [searchParams, setSearchParams] = useSearchParams();
   const [countries, setCountries] = useState<Country[]>([]);
-  const [totalPages, setTotalPages] = useState(0);
-  const [filters, setFilters] = useState<CountryFilters>({
-    name: searchParams.get("name"),
-    continentId: searchParams.get("continentId"),
-    page: parseInt(searchParams.get("page") as string) || 1,
-    limit: 10,
-  });
-  const [apiParamsString, setApiParamsString] = useState(
-    `?page=${filters.page}&limit=${filters.limit}`
-  );
+
+  // -- FILTERS ANd PAGINATION
+  const {
+    filters,
+    apiParamsString,
+    totalPages,
+    updateFilters,
+    nextPage,
+    previousPage,
+    setTotalPages,
+  } = useFiltersAndPagination<CountryFilters>(["name", "continentId"]);
+
+  // -- FETCH
   const { isLoading: loadingFetchData, fetchData: fetchCountries } = useFetch(
     `/admin/api/countries${apiParamsString}`
   );
@@ -53,55 +55,6 @@ export default function AdminCountries() {
   const { fetchData: changeCountryParticipation } = useFetch(
     "/admin/api/countries/update/participation"
   );
-
-  const handleSearch = useCallback((name: string) => {
-    console.log("handleSearch called with name:", name);
-    if (name) {
-      setFilters((previFilter) => ({ ...previFilter, name, page: 1 }));
-    } else {
-      setFilters((previFilter) => ({ ...previFilter, name: null, page: 1 }));
-    }
-  }, []);
-
-  const handleSelectContinent = useCallback((continentId: string) => {
-    console.log("handleSelectContinent called with continentId:", continentId);
-    if (continentId && continentId !== "0") {
-      setFilters((previFilter) => ({ ...previFilter, continentId, page: 1 }));
-    } else {
-      setFilters((previFilter) => ({
-        ...previFilter,
-        continentId: null,
-        page: 1,
-      }));
-    }
-  }, []);
-
-  const updateParams = useCallback(() => {
-    let paramsString = "";
-    const entriesParams = Object.entries(filters);
-    const newQueryParams = new URLSearchParams();
-    if (entriesParams.some((params) => params !== null)) {
-      paramsString += "?";
-      const entriesParamsString: string[] = [];
-      for (const [key, value] of entriesParams) {
-        if (value) {
-          const entryString = `${key}=${value}`;
-          entriesParamsString.push(entryString);
-          if (key !== "limit") {
-            newQueryParams.set(key, `${value}`);
-          }
-        }
-      }
-      paramsString += entriesParamsString.join("&");
-    }
-    setApiParamsString(paramsString);
-    setSearchParams(newQueryParams);
-  }, [filters, setSearchParams]);
-
-  useEffect(() => {
-    console.log("useEffect called to update params");
-    updateParams();
-  }, [updateParams]);
 
   const getCountries = useCallback(async () => {
     try {
@@ -118,10 +71,9 @@ export default function AdminCountries() {
         description: `Error: ${err}`,
       });
     }
-  }, [fetchCountries, toast]);
+  }, [fetchCountries, toast, setTotalPages]);
 
   useEffect(() => {
-    console.log("useEffect called to fetch countries");
     getCountries();
   }, [getCountries]);
 
@@ -146,6 +98,15 @@ export default function AdminCountries() {
         description: `Error: ${error}`,
       });
     }
+  };
+
+  // -- LOGIC
+  const handleSearch = (name: string | null) => {
+    updateFilters("name", name);
+  };
+
+  const handleSelectContinent = (continentId: string | null) => {
+    updateFilters("continentId", continentId);
   };
 
   return (
@@ -200,26 +161,14 @@ export default function AdminCountries() {
                 </div>
               </Card>
             </GridItem>
-            <PaginationTable
-              onPrevious={() => {
-                if (filters.page - 1 !== 0) {
-                  setFilters((previousFilters) => ({
-                    ...previousFilters,
-                    page: previousFilters.page - 1,
-                  }));
-                }
-              }}
-              onNext={() => {
-                if (filters.page + 1 <= totalPages) {
-                  setFilters((previousFilters) => ({
-                    ...previousFilters,
-                    page: previousFilters.page + 1,
-                  }));
-                }
-              }}
-              page={filters.page}
-              totalPages={totalPages}
-            />
+            {
+              <PaginationTable
+                onPrevious={nextPage}
+                onNext={previousPage}
+                page={filters.page}
+                totalPages={totalPages}
+              />
+            }
           </Grid>
         )}
       </PageTemplate>

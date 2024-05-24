@@ -3,7 +3,7 @@ import { Input } from "../../input";
 import styles from "./searchInput.module.scss";
 
 type props = {
-  onSearch: (key: string) => void;
+  onSearch: (key: string | null) => void;
   initValue: string;
 };
 
@@ -20,7 +20,7 @@ export const SearchInput = ({ onSearch, initValue }: props) => {
         clearTimeout(debounceTimeout);
       }
       const timeout = setTimeout(() => {
-        onSearch(value);
+        onSearch(!value ? null : value);
       }, 300); // Change 300 to your desired debounce time in milliseconds
       setDebounceTimeout(timeout);
     },

@@ -12,7 +12,7 @@ import styles from "./selectInput.module.scss";
 import { SelectItems } from "@/types/SelectItems";
 
 type props = {
-  onSelect: ([key]: string) => void;
+  onSelect: (key: string | null) => void;
   initValue: string;
   label: string;
   placeholder: string;
@@ -31,7 +31,9 @@ export const SelectInput = ({
   const onChange = useCallback(
     (value: string) => {
       setInput(value);
-      onSelect(value);
+      console.log(value);
+      // Warning "0" is a value for all by default "0" means null beacause of no-filter
+      onSelect(!value || value == "0" ? null : value);
     },
     [onSelect]
   );
