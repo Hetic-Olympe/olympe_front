@@ -2,24 +2,33 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import useFetch from "@/hooks/useFetch";
 import MultiSelectBadge from "@/components/ui/mutliSelectBadge"
 import { useToast } from "@/components/ui/use-toast";
+import { User } from '../../admin/dashboard/AdminDashboard';
+import { SportField } from "../../admin/dashboard/AdminDashboard";
+
+interface UserInterestsProps {
+    user: User | null;
+}
 
 type Options = {
     value: string;
     label: string;
 };
 
-export default function UserInterests() {
+export default function UserInterests({ user }: UserInterestsProps) {
     const { toast } = useToast();
     const { fetchData: fetchSportFields } = useFetch('/api/sports/fields');
+    const { fetchData: patchUserInterests } = useFetch('/api/users/me/interests')
     const [sportsFields, setSportsFields] = useState<Options[]>([]);
 
+    const defaultValues = useMemo(() => {
+        return user?.interests.map((interest) => ({ value: interest.sportField.id, label: interest.sportField.label }));
+    }, [user]);
 
     useEffect(() => {
         const getSportFields = async () => {
             try {
                 const { data } = await fetchSportFields();
-                setSportsFields(data.map((field: any) => ({ value: field.label, label: field.label })));
-                console.log(sportsFields);
+                setSportsFields(data.map((field: SportField) => ({ value: field.id, label: field.label })));
             }
             catch (err) {
                 console.error(err);
@@ -38,20 +47,22 @@ export default function UserInterests() {
         return [...sportsFields].sort((a, b) => a.label.localeCompare(b.label))
     }, [sportsFields]);
 
-    // @TODO Replace this with a patch request to the API
-    const handleSelectionChange = useCallback((selected: Options[]) => {
-        console.log(selected);
-    }, []);
+    const handleSelectionChange = useCallback(async (selected: Options[]) => {
+        try {
+            await patchUserInterests({
+                method: "PATCH",
+                body: JSON.stringify({ interests: selected.map((interest) => interest.value) }),
+            });
+        } catch (err) {
+            console.error("err", err);
+        }
+    }, [patchUserInterests, toast]);
 
     return (
         <MultiSelectBadge
             placeholder="Select your interests"
             options={sortedOptions}
-            defaultValues={
-                [
-                    { value: "swimming", label: "Swimming" },
-                    { value: "football", label: "Football" },
-                ]}
+            defaultValues={defaultValues}
             onChange={handleSelectionChange}
         />
     )
