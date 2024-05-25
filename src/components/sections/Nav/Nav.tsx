@@ -4,6 +4,21 @@ import { useAuth } from "@/contexts/AuthProvider";
 import logo from "@/assets/images/logo.png";
 import styles from "./nav.module.scss";
 import clsx from "clsx";
+import { LogOut, User } from "lucide-react"
+import {
+    Avatar,
+    AvatarFallback,
+} from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Link } from "react-router-dom";
 
 interface Page {
     to: string;
@@ -38,22 +53,50 @@ const Nav: FC<NavProps> = ({ pages }) => (
 );
 
 const BottomNav: FC = () => {
-    const { isAuthenticated, signOut } = useAuth();
+    const { isAuthenticated, signOut, user } = useAuth();
 
-    const pages: Page[] = isAuthenticated ? [
-        { to: "./#", title: "Logout", onClick: signOut }
-    ] : [
-        { to: "/signin", title: "Login" },
-    ];
+    if (!isAuthenticated) {
+        return <NavItem to="/signin">Login</NavItem>;
+    }
 
     return (
-        <ul>
-            {pages.map((page, index) => (
-                <NavItem key={index} to={page.to} onClick={page.onClick}>
-                    {page.title}
-                </NavItem>
-            ))}
-        </ul>
+        <div className="flex items-center justify-center">
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="overflow-hidden rounded-full"
+                    >
+                        <Avatar>
+                            {/* <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" /> */}
+                            <AvatarFallback>{user?.username?.[0]}</AvatarFallback>
+                        </Avatar>
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="center">
+                    <DropdownMenuLabel className="font-normal">
+                        <div className="flex flex-col space-y-1">
+                            <p className="text-sm font-medium leading-none">{user?.username}</p>
+                            <p className="text-xs leading-none text-muted-foreground">
+                                {user?.email}
+                            </p>
+                        </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <Link to="/profile">
+                        <DropdownMenuItem>
+                            <User className="mr-2 h-4 w-4" />
+                            <span>Profile</span>
+                        </DropdownMenuItem>
+                    </Link>
+                    <DropdownMenuItem onClick={signOut}>
+                        <LogOut className="mr-2 h-4 w-4" />
+                        <span>Log out</span>
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+        </div>
     );
 }
 

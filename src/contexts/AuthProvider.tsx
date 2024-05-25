@@ -3,53 +3,73 @@ import Cookies from 'js-cookie'
 
 interface AuthDataType {
   username: string | null;
+  email: string | null;
   role: string | null;
   token: string | null;
+  id: string | null;
 }
 
 interface AuthContextType {
   isAuthenticated: boolean;
   role: string | null;
-  auth: AuthDataType | null;
-  signIn: (username: string, role: string, token: string) => void;
+  user: AuthDataType | null;
+  signIn: (username: string, email: string, role: string, token: string, id: string) => void;
   signOut: () => void;
+  updateUserCookies: (username: string, email: string) => void;
 }
 
-const AUTH_COOKIE_KEYS = ['username', 'role', 'token'];
+const AUTH_COOKIE_KEYS = ['username', 'role', 'token', 'id'];
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => {
 
   const username = Cookies.get('username');
+  const email = Cookies.get('email');
   const role = Cookies.get('role');
   const token = Cookies.get('token');
+  const id = Cookies.get('id');
 
   const initialAuthState = useMemo(() => ({
     username: username || null,
+    email: email || null,
     role: role || null,
     token: token || null,
-  }), [username, role, token]);
+    id: id || null,
+  }), [username, role, token, id]);
 
 
-  const [auth, setAuth] = useState<AuthDataType | null>(initialAuthState.token ? initialAuthState : null);
+  const [user, setUser] = useState<AuthDataType | null>(initialAuthState.token ? initialAuthState : null);
 
-  const signIn = (username: string, role: string, token: string) => {
-    setAuth({ username, role, token });
+  const signIn = (username: string, email: string, role: string, token: string, id: string) => {
+    setUser({ username, email, role, token, id });
     AUTH_COOKIE_KEYS.forEach(key => Cookies.set(key, eval(key), { expires: 7, secure: true, sameSite: 'Strict' }));
   };
 
   const signOut = () => {
-    setAuth(null);
+    setUser(null);
     AUTH_COOKIE_KEYS.forEach(key => Cookies.remove(key));
   };
 
+  const updateUserCookies = (username: string, email: string) => {
+    setUser(prevState => prevState ? { ...prevState, username, email } : null);
+    const updatedValues: { [key: string]: string } = { username, email };
+    ['username', 'email'].forEach(key => Cookies.set(key, updatedValues[key], { expires: 7, secure: true, sameSite: 'Strict' }));
+  };
+
   useEffect(() => {
-    if (!auth && initialAuthState.token) setAuth(initialAuthState);
-  }, [auth, initialAuthState]);
+    if (!user && initialAuthState.token) setUser(initialAuthState);
+  }, [user, initialAuthState]);
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated: !!auth, role: auth?.role ?? null, auth, signIn, signOut }}>
+    <AuthContext.Provider value={{
+      isAuthenticated: !!user,
+      role: user?.role ?? null,
+      user,
+      signIn,
+      signOut,
+      updateUserCookies
+    }}>
       {children}
     </AuthContext.Provider>
   );
