@@ -1,5 +1,7 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import useFetch from "@/hooks/useFetch";
 import MultiSelectBadge from "@/components/ui/mutliSelectBadge"
+import { useToast } from "@/components/ui/use-toast";
 
 type Options = {
     value: string;
@@ -7,35 +9,34 @@ type Options = {
 };
 
 export default function UserInterests() {
+    const { toast } = useToast();
+    const { fetchData: fetchSportFields } = useFetch('/api/sports/fields');
+    const [sportsFields, setSportsFields] = useState<Options[]>([]);
 
-    // @TODO Replace this with a call to the API
-    const options: Options[] = [
-        { value: "swimming", label: "Swimming" },
-        { value: "gymnastics", label: "Gymnastics" },
-        { value: "handball", label: "Handball" },
-        { value: "football", label: "Football" },
-        { value: "basketball", label: "Basketball" },
-        { value: "volleyball", label: "Volleyball" },
-        { value: "tennis", label: "Tennis" },
-        { value: "table-tennis", label: "Table Tennis" },
-        { value: "athletics", label: "Athletics" },
-        { value: "boxing", label: "Boxing" },
-        { value: "cycling", label: "Cycling" },
-        { value: "diving", label: "Diving" },
-        { value: "equestrian", label: "Equestrian" },
-        { value: "fencing", label: "Fencing" },
-        { value: "golf", label: "Golf" },
-        { value: "judo", label: "Judo" },
-        { value: "rowing", label: "Rowing" },
-        { value: "sailing", label: "Sailing" },
-        { value: "shooting", label: "Shooting" },
-        { value: "weightlifting", label: "Weightlifting" },
-        { value: "wrestling", label: "Wrestling" },
-    ];
+
+    useEffect(() => {
+        const getSportFields = async () => {
+            try {
+                const { data } = await fetchSportFields();
+                setSportsFields(data.map((field: any) => ({ value: field.label, label: field.label })));
+                console.log(sportsFields);
+            }
+            catch (err) {
+                console.error(err);
+                toast({
+                    variant: "destructive",
+                    title: "Fetch sports fields failed",
+                    description: `Error: ${err}`,
+                });
+            }
+        };
+
+        getSportFields();
+    }, [fetchSportFields, toast]);
 
     const sortedOptions = useMemo(() => {
-        return [...options].sort((a, b) => a.label.localeCompare(b.label))
-    }, [options]);
+        return [...sportsFields].sort((a, b) => a.label.localeCompare(b.label))
+    }, [sportsFields]);
 
     // @TODO Replace this with a patch request to the API
     const handleSelectionChange = useCallback((selected: Options[]) => {
