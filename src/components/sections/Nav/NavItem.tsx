@@ -3,7 +3,7 @@ import styles from "./nav.module.scss";
 import { ReactNode } from "react";
 
 interface NavItemProps {
-    key: number
+    key?: number
     to: string
     children: ReactNode
     onClick?: () => void;

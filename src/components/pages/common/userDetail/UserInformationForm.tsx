@@ -22,12 +22,14 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { zNotNullStringSchema } from "@/lib/utils"
-import { User, RoleLabel } from "../AdminDashboard";
+import { User, RoleLabel } from "../../admin/dashboard/AdminDashboard";
+import { useAuth } from "@/contexts/AuthProvider"
 
 interface AdminUserInformationFormProps {
     user: User | null;
-    fetchUser: (options?: RequestInit) => Promise<{ data: any; }>;
+    fetchUser: (options?: RequestInit) => Promise<{ data: User; }>;
     syncUser: (updatedUser: User) => void;
+    isAdmin: boolean;
 }
 
 type FormData = {
@@ -45,27 +47,28 @@ const UserSchema = z.object({
     firstname: zNotNullStringSchema("Firstname"),
     lastname: zNotNullStringSchema("Lastname"),
     role: z.object({
-        id: z.number(),
-        label: z.enum([RoleLabel.USER, RoleLabel.ADMIN]),
-    }),
+        id: z.number().optional(),
+        label: z.enum([RoleLabel.USER, RoleLabel.ADMIN]).optional(),
+    }).optional(),
     email: z.string().email({
         message: "Email must be a valid email address.",
     }),
     phone: z.string().optional().nullable(),
 });
 
-export default function AdminUserInformationForm({ user, fetchUser, syncUser }: AdminUserInformationFormProps) {
+export default function UserInformationForm({ user, fetchUser, syncUser, isAdmin }: AdminUserInformationFormProps) {
     const { toast } = useToast();
+    const { updateUserCookies } = useAuth();
 
     const form = useForm({
         resolver: zodResolver(UserSchema),
         defaultValues: {
             firstname: user?.firstname,
             lastname: user?.lastname,
-            role: {
-                id: user?.role.id,
-                label: user?.role.label,
-            },
+            role: user?.role ? {
+                id: user.role.id,
+                label: user.role.label,
+            } : undefined,
             email: user?.email,
             phone: user?.phone,
         },
@@ -78,11 +81,10 @@ export default function AdminUserInformationForm({ user, fetchUser, syncUser }: 
                 body: JSON.stringify(formData),
             });
 
-            console.log("data", data)
-
             if (!data) return;
 
             syncUser(data);
+            updateUserCookies(data.firstname, data.email);
 
             toast({
                 title: "User updated successfully",
@@ -96,7 +98,7 @@ export default function AdminUserInformationForm({ user, fetchUser, syncUser }: 
                 description: `Error: ${err instanceof Error ? err.message : err}`,
             });
         }
-    }, [fetchUser, toast]);
+    }, [fetchUser, toast, syncUser]);
 
     return (
         <Form {...form} >
@@ -129,24 +131,26 @@ export default function AdminUserInformationForm({ user, fetchUser, syncUser }: 
                         <FormMessage />
                     </FormItem>
                 )} />
-                <FormField control={form.control} name="role" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Role</FormLabel>
-                        <Select
-                            onValueChange={value => field.onChange({ id: value === 'user' ? 2 : 1, label: value })}
-                            defaultValue={field.value.label}>
-                            <SelectTrigger>
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="user">User</SelectItem>
-                                <SelectItem value="admin">Admin</SelectItem>
-                            </SelectContent>
-                        </Select>
-                        <FormDescription>Choose the role of the user. This is a critical action.</FormDescription>
-                        <FormMessage />
-                    </FormItem>
-                )} />
+                {isAdmin && (
+                    <FormField control={form.control} name="role" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Role</FormLabel>
+                            <Select
+                                onValueChange={value => field.onChange({ id: value === 'user' ? 2 : 1, label: value })}
+                                defaultValue={field?.value?.label}>
+                                <SelectTrigger>
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="user">User</SelectItem>
+                                    <SelectItem value="admin">Admin</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <FormDescription>Choose the role of the user. This is a critical action.</FormDescription>
+                            <FormMessage />
+                        </FormItem>
+                    )} />
+                )}
                 <div className="flex justify-end mt-4">
                     <Button type="submit"> <Save className="mr-2 h-4 w-4 right-button" />Save</Button>
                 </div>
