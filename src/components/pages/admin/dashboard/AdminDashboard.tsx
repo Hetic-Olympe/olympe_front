@@ -13,6 +13,15 @@ export enum RoleLabel {
     USER = "user",
     ADMIN = "admin"
 }
+export interface SportField {
+    id: string;
+    label: string;
+}
+
+export interface Interest {
+    sportField: SportField;
+}
+
 export interface User {
     id: string;
     createdAt: string;
@@ -26,7 +35,7 @@ export interface User {
         id: number;
         label: RoleLabel;
     };
-    interests: string[];
+    interests: Interest[];
     likes: string[];
 }
 

@@ -58,7 +58,7 @@ export default function UserDetail({ id: propId = null }: AdminUserDetailProps) 
                         </GridItem>
                         <GridItem columnSpan={6} rowSpan={1}>
                             <Card title="Interests">
-                                <UserInterests />
+                                <UserInterests user={user} />
                             </Card>
                         </GridItem>
                         <GridItem columnSpan={6} rowSpan={2}>

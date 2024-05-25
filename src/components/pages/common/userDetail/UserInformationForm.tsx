@@ -98,7 +98,7 @@ export default function UserInformationForm({ user, fetchUser, syncUser, isAdmin
                 description: `Error: ${err instanceof Error ? err.message : err}`,
             });
         }
-    }, [fetchUser, toast, syncUser]);
+    }, [fetchUser, toast, syncUser, updateUserCookies]);
 
     return (
         <Form {...form} >
