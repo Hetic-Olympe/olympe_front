@@ -37,7 +37,7 @@ export default function AdminCountries() {
   const { toast } = useToast();
   const [countries, setCountries] = useState<Country[]>([]);
 
-  // -- FILTERS ANd PAGINATION
+  // -- FILTERS AND PAGINATION
   const {
     filters,
     apiParamsString,
@@ -47,7 +47,11 @@ export default function AdminCountries() {
     previousPage,
     goToIndexPage,
     setTotalPages,
-  } = useFiltersAndPagination<CountryFilters>(["name", "continentId"]);
+  } = useFiltersAndPagination<CountryFilters>([
+    "name",
+    "continentId",
+    "isParticipate",
+  ]);
 
   // -- FETCH
   const { isLoading: loadingFetchData, fetchData: fetchCountries } = useFetch(
