@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import { Input } from "../../input";
 import styles from "./searchInput.module.scss";
+import SearchIcon from "../../../icons/SearchIcon";
 
 type props = {
   onSearch: (key: string | null) => void;
@@ -33,6 +34,7 @@ export const SearchInput = ({ onSearch, initValue }: props) => {
         placeholder="Search a country"
         value={input}
         onChange={(e) => onChange(e.target.value)}
+        icon={<SearchIcon width="20" height="20" />}
       />
     </div>
   );

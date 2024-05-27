@@ -41,7 +41,7 @@ const useFiltersAndPagination = <T extends PaginationFilters>(
     const entriesParams = Object.entries(filters);
     const entriesParamsString: string[] = [];
     for (const [key, value] of entriesParams) {
-      if (value) {
+      if (value && value !== "null") {
         const entryString = `${key}=${value}`;
         entriesParamsString.push(entryString);
       }
@@ -53,7 +53,7 @@ const useFiltersAndPagination = <T extends PaginationFilters>(
     const entriesParams = Object.entries(filters);
     const newQueryParams = new URLSearchParams();
     for (const [key, value] of entriesParams) {
-      if (value && key !== "limit") {
+      if (value && value !== "null" && key !== "limit") {
         newQueryParams.set(key, `${value}`);
       }
     }
@@ -95,14 +95,23 @@ const useFiltersAndPagination = <T extends PaginationFilters>(
     }
   };
 
+  const goToIndexPage = (indexPage: number) => {
+    setFilters((previousFilters) => ({
+      ...previousFilters,
+      page: indexPage,
+    }));
+  };
+
   return {
     filters,
     apiParamsString,
     totalPages,
+    limit,
     updateFilters,
     nextPage,
     previousPage,
     setTotalPages,
+    goToIndexPage,
   };
 };
 

@@ -9,7 +9,7 @@ import { SearchInput } from "@/components/ui/Inputs/Search/SearchInput";
 import { SelectInput } from "@/components/ui/Inputs/Select/SelectInput";
 import { Card } from "@/components/ui/Card/Card";
 import ReactCountryFlag from "react-country-flag";
-import { continentItems } from "@/types/SelectItems";
+import { continentItems, isParticipateItems } from "@/types/SelectItems";
 import { PaginationFilters } from "@/types/Pagination";
 import { PaginationTable } from "@/components/ui/Pagination/PaginationTable";
 import useFiltersAndPagination from "@/hooks/useFiltersAndPagination";
@@ -30,6 +30,7 @@ export interface Country {
 export interface CountryFilters extends PaginationFilters {
   name: string | null;
   continentId: string | null;
+  isParticipate: string | null;
 }
 
 export default function AdminCountries() {
@@ -44,6 +45,7 @@ export default function AdminCountries() {
     updateFilters,
     nextPage,
     previousPage,
+    goToIndexPage,
     setTotalPages,
   } = useFiltersAndPagination<CountryFilters>(["name", "continentId"]);
 
@@ -109,6 +111,10 @@ export default function AdminCountries() {
     updateFilters("continentId", continentId);
   };
 
+  const handleSelectIsParticipate = (isParticipate: string | null) => {
+    updateFilters("isParticipate", isParticipate);
+  };
+
   return (
     <>
       <Header
@@ -126,6 +132,13 @@ export default function AdminCountries() {
             placeholder="Select a continent"
             label="Continents"
             items={continentItems}
+          />
+          <SelectInput
+            onSelect={handleSelectIsParticipate}
+            initValue={filters.isParticipate || "null"}
+            placeholder="Filter by particpiate"
+            label="Participation"
+            items={isParticipateItems}
           />
         </div>
         {loadingFetchData ? (
@@ -165,6 +178,7 @@ export default function AdminCountries() {
               <PaginationTable
                 onPrevious={nextPage}
                 onNext={previousPage}
+                onChangePage={(index) => goToIndexPage(index)}
                 page={filters.page}
                 totalPages={totalPages}
               />

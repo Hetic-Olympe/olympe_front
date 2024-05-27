@@ -38,3 +38,18 @@ export const continentItems: SelectItems = [
     label: "South America",
   },
 ];
+
+export const isParticipateItems: SelectItems = [
+  {
+    value: "null",
+    label: "All",
+  },
+  {
+    value: "true",
+    label: "Participate",
+  },
+  {
+    value: "false",
+    label: "No participate",
+  },
+];

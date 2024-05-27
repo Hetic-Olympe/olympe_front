@@ -1,3 +1,9 @@
 .search_input {
   width: 60%;
+  position: relative;
+  .icon {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+  }
 }
