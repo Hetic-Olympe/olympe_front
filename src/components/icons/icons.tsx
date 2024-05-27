@@ -7,3 +7,4 @@ export { default as CountriesIcon } from "./CountriesIcon";
 export { default as MedalsIcon } from "./MedalsIcon";
 export { default as SportIcon } from "./SportIcon";
 export { default as HeartIcon } from "./HeartIcon";
+export { default as SearchIcon } from "./SearchIcon";

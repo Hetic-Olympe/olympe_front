@@ -1,9 +1,10 @@
 import { useCallback, useState } from "react";
 import { Input } from "../../input";
 import styles from "./searchInput.module.scss";
+import SearchIcon from "../../../icons/SearchIcon";
 
 type props = {
-  onSearch: (key: string) => void;
+  onSearch: (key: string | null) => void;
   initValue: string;
 };
 
@@ -20,7 +21,7 @@ export const SearchInput = ({ onSearch, initValue }: props) => {
         clearTimeout(debounceTimeout);
       }
       const timeout = setTimeout(() => {
-        onSearch(value);
+        onSearch(!value ? null : value);
       }, 300); // Change 300 to your desired debounce time in milliseconds
       setDebounceTimeout(timeout);
     },
@@ -33,6 +34,7 @@ export const SearchInput = ({ onSearch, initValue }: props) => {
         placeholder="Search a country"
         value={input}
         onChange={(e) => onChange(e.target.value)}
+        icon={<SearchIcon width="20" height="20" />}
       />
     </div>
   );
