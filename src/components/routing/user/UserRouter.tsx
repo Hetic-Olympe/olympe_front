@@ -8,6 +8,7 @@ import NotFound from "@/components/sections/NotFound/NotFound"
 import UserDashboard from "@/components/pages/user/dashboard/UserDashboard"
 import Athletes from "@/components/pages/user/athletes/Athletes"
 import { useAuth } from "@/contexts/AuthProvider"
+import Calendar from "@/components/pages/user/calendar/Calendar"
 
 const PRIMARY_ACTIVE_COLOR = "#23B2F5";
 const DEFAULT_COLOR = "#7295b0"
@@ -32,7 +33,7 @@ export function UserRouter() {
                 <Routes>
                     <Route path="/" element={<UserDashboard />} />
                     <Route path="/athletes" element={<Athletes />} />
-                    <Route path="data/" element={<div>user data</div>} />
+                    <Route path="/calendar" element={<Calendar />} />
                     <Route
                         path="profile/"
                         element={

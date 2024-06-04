@@ -4,7 +4,10 @@ import MedalProfile from "@/components/ui/MedalProfile/MedalProfile";
 import athletesData from "../../../ui/MedalProfile/temp__athlete.json";
 import { MedalsIcon, AthleteIcon } from "@/components/icons/icons";
 import { Grid, GridItem } from "@/components/ui/Grid/Grid";
-import { Card, Divider, KPICard } from "@/components/ui/Card/Card";
+import { Card, KPICard } from "@/components/ui/Card/Card";
+import EventCalendar from "@/components/calendar/EventCalendar";
+import timeGridPlugin from '@fullcalendar/timegrid';
+import listPlugin from '@fullcalendar/list';
 
 export default function UserDashboard() {
   const athletes = athletesData.athletes;
@@ -33,10 +36,14 @@ export default function UserDashboard() {
             </Card>
           </GridItem>
           <GridItem columnSpan={6}>
-            <Card title="Today schedule" link="/calendar">
-              content card
-              <Divider />
-              blabla
+            <Card title="Today schedule" link="/calendar" padding={0}>
+              <EventCalendar
+                plugins={[timeGridPlugin, listPlugin]}
+                headerToolbar={false}
+                initialView="listDay"
+                isFullCalendar={false}
+                height={500}
+              />
             </Card>
           </GridItem>
           <GridItem columnSpan={6}>
