@@ -1,10 +1,4 @@
-import { Line } from "react-chartjs-2";
-import { User } from "../../admin/dashboard/AdminDashboard";
-
-interface UserContributionsProps {
-  user: User | null;
-}
-
+import type { ChartData, ChartOptions, Tick } from "chart.js";
 import {
   CategoryScale,
   Chart as ChartJS,
@@ -15,6 +9,7 @@ import {
   Title,
   Tooltip,
 } from "chart.js";
+import { Line } from "react-chartjs-2";
 
 ChartJS.register(
   CategoryScale,
@@ -26,7 +21,7 @@ ChartJS.register(
   Legend
 );
 
-const options = {
+const options: ChartOptions<"line"> = {
   responsive: true,
   maintainAspectRatio: false,
   scales: {
@@ -37,11 +32,17 @@ const options = {
       beginAtZero: true,
     },
     x: {
-      beginAtZero: true,
+      type: "category", // Assurez-vous que le type est correct pour l'axe x
       ticks: {
-        callback: function (value, index, values) {
-          // Display only the first and last label
-          return index === 0 || index === values.length - 1 ? value : "";
+        callback: function (
+          value: string | number,
+          index: number,
+          values: Tick[]
+        ) {
+          // Afficher uniquement la première et la dernière étiquette
+          return index === 0 || index === values.length - 1
+            ? value.toString()
+            : "";
         },
       },
     },
@@ -53,7 +54,7 @@ const options = {
   },
 };
 
-const getPastDate = (days) => {
+const getPastDate = (days: number) => {
   const date = new Date();
   date.setDate(date.getDate() - days);
   return date.toLocaleDateString();
@@ -61,13 +62,13 @@ const getPastDate = (days) => {
 
 const labels = Array.from({ length: 6 }, (_, i) => getPastDate(5 - i));
 
-const data = {
+const data: ChartData<"line"> = {
   labels,
   datasets: [
     {
       label: "Contributions",
       data: labels.map(
-        () => Math.floor(Math.random() * 21) //TOBECHANGED
+        () => Math.floor(Math.random() * 21) // Valeur aléatoire pour les contributions
       ),
       borderColor: "rgb(251, 146, 60)",
       backgroundColor: "rgba(251, 146, 60, 0.5)",
