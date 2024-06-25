@@ -1,6 +1,6 @@
 import Header from "@/components/sections/Header/Header";
 import PageTemplate from "@/components/sections/PageTeample/PageTemplate";
-import { Card } from "@/components/ui/Card/Card";
+import { BannerCard, Card } from "@/components/ui/Card/Card";
 import { Grid, GridItem } from "@/components/ui/Grid/Grid";
 import { useToast } from "@/components/ui/use-toast";
 import useFetch from "@/hooks/useFetch";
@@ -58,9 +58,9 @@ export default function UserDetail({
         {user !== null && (
           <Grid>
             <GridItem columnSpan={6} rowSpan={2}>
-              <Card title="Profile picture" minHeight={336}>
+              <BannerCard title="Profile picture" minHeight={336}>
                 content
-              </Card>
+              </BannerCard>
             </GridItem>
             <GridItem columnSpan={6} rowSpan={1}>
               <Card title="Interests">
