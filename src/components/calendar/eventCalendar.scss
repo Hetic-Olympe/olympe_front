@@ -1,0 +1,167 @@
+.fc {
+  .fc-timegrid-slot {
+    height: 3em;
+
+    &-label {
+      vertical-align: baseline;
+    }
+  }
+
+  .fc-timegrid-slot.fc-timegrid-slot-lane {
+    position: relative;
+
+    &:before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: var(--stroke-color);
+      top: 0;
+    }
+  }
+
+  .fc-timegrid-col.fc-day-today {
+    background-color: var(--primary-light);
+  }
+  .fc-button-primary {
+    background-color: var(--primary-light);
+    border-color: var(--primary);
+    color: var(--primary);
+    &:hover {
+      background-color: var(--primary);
+      border-color: var(--primary);
+      color: var(--primary-light);
+    }
+    &:focus {
+      box-shadow: none;
+    }
+    &:disabled {
+      background-color: var(--primary-light);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+  }
+  .fc-button-primary:not(:disabled).fc-button-active {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: var(--primary-light);
+  }
+  .fc-button-primary:not(:disabled) {
+    &:active {
+      background-color: var(--primary);
+      border-color: var(--primary);
+      color: var(--primary-light);
+      &:focus {
+        box-shadow: none;
+      }
+    }
+    &.fc-button-active:focus {
+      box-shadow: none;
+    }
+  }
+  .fc-list-event-dot {
+    display: none;
+  }
+  .fc-list-event-time {
+    display: none;
+  }
+}
+
+.fc-theme-standard .fc-list {
+  border: none;
+}
+
+.fc-col-header-cell,
+.fc-timegrid-axis,
+.fc-scroller-harness,
+.fc .fc-scrollgrid-section-sticky > *,
+.fc-theme-standard .fc-list-day-cushion,
+.fc .fc-cell-shaded {
+  background-color: transparent;
+}
+
+.fc-timegrid-slot-label-frame {
+  margin-top: -10px;
+  color: var(--text-grey-200);
+  text-transform: uppercase;
+  font-size: 14px;
+}
+
+.fc-toolbar-title {
+  color: var(--text-grey-300);
+}
+
+.fc-day-header-content {
+  &.today {
+    .fc-day-header-content-weekday,
+    .fc-day-header-content-day {
+      color: var(--primary);
+    }
+  }
+  .fc-day-header-content-weekday {
+    color: var(--text-grey-200);
+    font-weight: 400;
+  }
+  .fc-day-header-content-day {
+    color: var(--text-grey-300);
+    font-size: 22px;
+    font-weight: 600;
+  }
+}
+
+.fc-scroller {
+  margin-top: 25px;
+}
+
+.fc-theme-standard {
+  td,
+  th,
+  .fc-scrollgrid {
+    border: 0;
+  }
+}
+
+.fc-event {
+  position: relative;
+  cursor: pointer;
+  &.sport {
+    background-color: var(--color-sport-light);
+    border: 1px var(--color-sport) solid;
+  }
+  &.concert {
+    background-color: var(--color-concert-light);
+    border: 1px var(--color-concert) solid;
+  }
+
+  .fc-event-main-frame {
+    padding: 14px;
+    position: relative;
+
+    .fc-event-title {
+      font-weight: bold;
+      color: var(--text-grey-300);
+      font-size: 16px;
+    }
+    .fc-event-time {
+      color: var(--text-grey-200);
+    }
+    .fc-event-type {
+      position: absolute;
+      bottom: 14px;
+      right: 14px;
+      &.sport {
+        color: var(--color-sport);
+      }
+      &.concert {
+        color: var(--color-concert);
+      }
+    }
+  }
+}
+
+.fc-list-event-title {
+  .fc-event-title {
+    margin-bottom: 8px;
+  }
+}

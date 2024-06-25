@@ -7,6 +7,14 @@
   :root {
     --primary: #23b2f5;
     --background: #f9fbfc;
+    --color-concert: #7f23f5;
+    --color-concert-light: #f1e7fe;
+    --color-ceremony: #23f590;
+    --color-ceremony-light: #e7fef3;
+    --color-sport: #f52362;
+    --color-sport-light: #fee7ee;
+    --color-other: #f57b23;
+    --color-other-light: #ffc2a1;
     --stroke-color: #dfe7ec;
     --text-grey-200: #7295b0;
     --text-grey-300: #446279;
