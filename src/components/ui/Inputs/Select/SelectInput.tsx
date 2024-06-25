@@ -7,22 +7,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
 import styles from "./selectInput.module.scss";
-import { SelectItems } from "@/types/SelectItems";
+import { Items } from "@/types/SelectItems";
 
 type props = {
   onSelect: (key: string | null) => void;
   initValue: string;
-  label: string;
   placeholder: string;
-  items: SelectItems;
+  items: Items;
 };
 
 export const SelectInput = ({
   onSelect,
   initValue,
-  label,
   placeholder,
   items,
 }: props) => {
@@ -40,7 +37,6 @@ export const SelectInput = ({
 
   return (
     <div className={styles.filter}>
-      <Label>{label}</Label>
       <Select value={input} onValueChange={(value) => onChange(value)}>
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder={placeholder} />

@@ -2,32 +2,25 @@ import Header from "@/components/sections/Header/Header";
 import PageTemplate from "@/components/sections/PageTeample/PageTemplate";
 import { useToast } from "@/components/ui/use-toast";
 import useFetch from "@/hooks/useFetch";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import styles from "./adminCountries.module.scss";
 import { Grid, GridItem } from "@/components/ui/Grid/Grid";
 import { SearchInput } from "@/components/ui/Inputs/Search/SearchInput";
-import { SelectInput } from "@/components/ui/Inputs/Select/SelectInput";
 import { Card } from "@/components/ui/Card/Card";
-import ReactCountryFlag from "react-country-flag";
 import { continentItems, isParticipateItems } from "@/types/SelectItems";
-import { PaginationFilters } from "@/types/Pagination";
+import { BasicFilters } from "@/types/Pagination";
 import { PaginationTable } from "@/components/ui/Pagination/PaginationTable";
 import useFiltersAndPagination from "@/hooks/useFiltersAndPagination";
+import {
+  Country,
+  getCountriesColumns,
+} from "../../../sections/Tables/Countries/Columns";
+import { DataTable } from "@/components/sections/Tables/Table";
+import { FilterDropDown } from "@/components/ui/Inputs/Filters/FilterDropDown";
+import { Button } from "@/components/ui/button";
+import CloseIcon from "@/components/icons/CloseIcon";
 
-export interface Continent {
-  id: number;
-  name: string;
-}
-
-export interface Country {
-  id: number;
-  iso: string;
-  nicename: string;
-  isParticipate: boolean;
-  continent: Continent;
-}
-
-export interface CountryFilters extends PaginationFilters {
+export interface CountryFilters extends BasicFilters {
   name: string | null;
   continentId: string | null;
   isParticipate: string | null;
@@ -36,17 +29,21 @@ export interface CountryFilters extends PaginationFilters {
 export default function AdminCountries() {
   const { toast } = useToast();
   const [countries, setCountries] = useState<Country[]>([]);
-
+  const [selectedRows, setSelectedRows] = useState<(string | number)[]>([]);
   // -- FILTERS AND PAGINATION
   const {
     filters,
+    hasAdditionalFilter,
     apiParamsString,
     totalPages,
+    sorts,
     updateFilters,
+    updateSorts,
     nextPage,
     previousPage,
     goToIndexPage,
     setTotalPages,
+    clearFilters,
   } = useFiltersAndPagination<CountryFilters>([
     "name",
     "continentId",
@@ -80,31 +77,38 @@ export default function AdminCountries() {
   }, [fetchCountries, toast, setTotalPages]);
 
   useEffect(() => {
+    console.log("COUNTRY");
     getCountries();
   }, [getCountries]);
 
-  const handleParticipation = async (id: number): Promise<void> => {
-    try {
-      await changeCountryParticipation({
-        method: "POST",
-        body: JSON.stringify({ id }),
-      });
-      // Update local state immediately after a successful server update
-      setCountries((prevCountries) =>
-        prevCountries.map((country) =>
-          country.id === id
-            ? { ...country, isParticipate: !country.isParticipate }
-            : country
-        )
-      );
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Change country participation failed",
-        description: `Error: ${error}`,
-      });
-    }
-  };
+  const onParticipateChanged = useCallback(
+    async (country: Country): Promise<void> => {
+      try {
+        await changeCountryParticipation({
+          method: "POST",
+          body: JSON.stringify({ id: country.id }),
+        });
+        // Update local state immediately after a successful server update
+        setCountries((prevCountries) =>
+          prevCountries.map((previousCountry) =>
+            previousCountry.id === country.id
+              ? {
+                  ...previousCountry,
+                  isParticipate: !previousCountry.isParticipate,
+                }
+              : previousCountry
+          )
+        );
+      } catch (error) {
+        toast({
+          variant: "destructive",
+          title: "Change country participation failed",
+          description: `Error: ${error}`,
+        });
+      }
+    },
+    [changeCountryParticipation, toast]
+  );
 
   // -- LOGIC
   const handleSearch = (name: string | null) => {
@@ -119,6 +123,64 @@ export default function AdminCountries() {
     updateFilters("isParticipate", isParticipate);
   };
 
+  const onSelectAll = useCallback(() => {
+    if (selectedRows.length === countries.length) {
+      setSelectedRows([]);
+    } else {
+      const countriesId = countries.map((country) => country.id);
+      setSelectedRows([...countriesId]);
+    }
+  }, [countries, selectedRows]);
+
+  const onSelectOne = useCallback(
+    (countryId: Country["id"]) => {
+      if (selectedRows.includes(countryId)) {
+        setSelectedRows((previousSelectedRow) => [
+          ...previousSelectedRow.filter((id) => id !== countryId),
+        ]);
+      } else {
+        setSelectedRows((previousSelectedRow) => [
+          ...previousSelectedRow,
+          countryId,
+        ]);
+      }
+    },
+    [selectedRows]
+  );
+
+  useEffect(() => {
+    console.log("SELECTED ROWS", selectedRows);
+  }, [selectedRows]);
+
+  const onDelete = (country: Country) => {
+    alert(`Delete ${country.id}`);
+  };
+
+  const onEdit = (country: Country) => {
+    alert(`Edit ${country.id}`);
+  };
+
+  const onSortingChanged = useCallback(
+    (sortKey: string, sortOrder: false | "asc" | "desc") => {
+      updateSorts(sortKey, sortOrder);
+    },
+    [updateSorts]
+  );
+
+  const columns = useMemo(
+    () =>
+      getCountriesColumns({
+        onSelectAll,
+        onSelectOne,
+        onEdit,
+        onDelete,
+        onParticipateChanged,
+        onSortingChanged,
+        sorts,
+      }),
+    [onParticipateChanged, sorts, onSortingChanged, onSelectAll, onSelectOne]
+  );
+
   return (
     <>
       <Header
@@ -126,69 +188,54 @@ export default function AdminCountries() {
         subtitle="Handle countries's participations"
       />
       <PageTemplate>
-        <div className={styles.search_section}>
-          <SearchInput onSearch={handleSearch} initValue={filters.name || ""} />
-        </div>
-        <div className={styles.filter_section}>
-          <SelectInput
-            onSelect={handleSelectContinent}
-            initValue={filters.continentId || "0"}
-            placeholder="Select a continent"
-            label="Continents"
-            items={continentItems}
-          />
-          <SelectInput
-            onSelect={handleSelectIsParticipate}
-            initValue={filters.isParticipate || "null"}
-            placeholder="Filter by particpiate"
-            label="Participation"
-            items={isParticipateItems}
-          />
-        </div>
-        {loadingFetchData ? (
-          "LOADING ..."
-        ) : (
-          <Grid>
-            <GridItem columnSpan={12}>
-              <Card title="Countries">
-                <div>
-                  {countries.length > 0
-                    ? countries.map((country) => (
-                        <div key={country.id} className={styles.row}>
-                          <ReactCountryFlag countryCode={country.iso} />
-                          <p>{country.iso}</p>
-                          <p>{country.nicename}</p>
-                          <p>{country.continent.name}</p>
-                          <label
-                            htmlFor="isParticipate"
-                            className={styles.row__toggle}
-                          >
-                            Is participate
-                            <input
-                              type="checkbox"
-                              name="isParticipate"
-                              className={styles.row__toggle__checkbox}
-                              checked={country.isParticipate}
-                              onChange={() => handleParticipation(country.id)}
-                            />
-                          </label>
-                        </div>
-                      ))
-                    : "No countries found"}
-                </div>
-              </Card>
-            </GridItem>
-            {
-              <PaginationTable
-                onPrevious={nextPage}
-                onNext={previousPage}
-                onChangePage={(index) => goToIndexPage(index)}
-                page={filters.page}
-                totalPages={totalPages}
-              />
-            }
-          </Grid>
-        )}
+        <Grid>
+          <GridItem columnSpan={12}>
+            <Card
+              title="Countries"
+              isLoading={loadingFetchData}
+              minHeight={300}
+            >
+              <div className={styles.filter_section}>
+                <SearchInput
+                  onSearch={handleSearch}
+                  initValue={filters.name || ""}
+                />
+                <FilterDropDown
+                  onSelect={handleSelectContinent}
+                  title="Continents"
+                  initValue={filters.continentId || ""}
+                  label="Select a continent"
+                  items={continentItems}
+                />
+                <FilterDropDown
+                  onSelect={handleSelectIsParticipate}
+                  title="Is Participiate"
+                  initValue={filters.isParticipate || ""}
+                  label="Filter by particpiate"
+                  items={isParticipateItems}
+                />
+                {hasAdditionalFilter && (
+                  <Button variant="ghost" onClick={() => clearFilters()}>
+                    Reset
+                    <CloseIcon width="16" />
+                  </Button>
+                )}
+              </div>
+
+              <DataTable columns={columns} data={countries} />
+
+              <div className={styles.pagination_section}>
+                <PaginationTable
+                  onPrevious={nextPage}
+                  onNext={previousPage}
+                  onChangePage={(index) => goToIndexPage(index)}
+                  page={filters.page}
+                  totalPages={totalPages}
+                />
+              </div>
+            </Card>
+          </GridItem>
+        </Grid>
       </PageTemplate>
     </>
   );
