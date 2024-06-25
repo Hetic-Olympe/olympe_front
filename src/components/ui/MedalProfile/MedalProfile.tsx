@@ -6,8 +6,8 @@ interface MedalProfileProps {
     id: number;
     name: string;
     country: {
-      iso: string,
-      nicename: string,
+      iso: string;
+      nicename: string;
     };
     sport: string;
     profile: string;
@@ -60,23 +60,29 @@ function MedalProfile({ type, athlete }: MedalProfileProps) {
           </div>
         </div>
         <h3>{athlete.name}</h3>
-        <p>
-          Sport : <span>{athlete.sport}</span>
-        </p>
-        <p>
-          Nationality : {" "}
-          <span className={styles.medalProfile__content__medal__flag}>
-            <ReactCountryFlag
-              svg
-              countryCode={athlete.country.iso}
-              style={{
-                fontSize: '1.3em',
-              }}
-              aria-label="United States"
-            />
-            <div className={styles.medalProfile__content__medal__flag__nicename}>{athlete.country.nicename}</div>
-          </span>
-        </p>
+        <div className="flex flex-col gap-1 pt-1">
+          <p>
+            Sport : <span>{athlete.sport}</span>
+          </p>
+          <p>
+            Nationality :{" "}
+            <span className={styles.medalProfile__content__medal__flag}>
+              <ReactCountryFlag
+                svg
+                countryCode={athlete.country.iso}
+                style={{
+                  fontSize: "1.3em",
+                }}
+                aria-label="United States"
+              />
+              <div
+                className={styles.medalProfile__content__medal__flag__nicename}
+              >
+                {athlete.country.nicename}
+              </div>
+            </span>
+          </p>
+        </div>
       </div>
     </div>
   );
