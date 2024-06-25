@@ -9,6 +9,8 @@ interface CardProps {
   link?: string;
   padding?: number;
   minHeight?: number;
+  bannerPictureSrc?: string;
+  profilePictureSrc?: string;
 }
 
 interface KPICardProps {
@@ -68,21 +70,17 @@ export const BannerCard = ({
   link,
   padding = 32,
   minHeight = 0,
+  bannerPictureSrc = "https://media.licdn.com/dms/image/D4E16AQG8vzwUtW7e2Q/profile-displaybackgroundimage-shrink_350_1400/0/1692697342619?e=1724889600&v=beta&t=tCXWVOSLO6GZdGlFrvKdmTi4AiPesciYH7A99Gixm2w",
+  profilePictureSrc = "https://media.licdn.com/dms/image/D4E03AQFJozX4LWQdWA/profile-displayphoto-shrink_400_400/0/1692710017446?e=1724889600&v=beta&t=99eg61C1yTo62nMmVZMppIq7eeS5kwzvbjvTXTJgDvs",
 }: CardProps) => {
   return (
     <div className={styles.card} style={{ minHeight }}>
       <div className={styles.card__banner}>
         <div className={styles.card__banner__picture}>
-          <img
-            src="https://media.licdn.com/dms/image/D4E16AQG8vzwUtW7e2Q/profile-displaybackgroundimage-shrink_350_1400/0/1692697342619?e=1724889600&v=beta&t=tCXWVOSLO6GZdGlFrvKdmTi4AiPesciYH7A99Gixm2w"
-            alt="profile picture"
-          />
+          <img src={bannerPictureSrc} alt="Banner of {user.name}" />
         </div>
         <div className={styles.card__banner__profile}>
-          <img
-            src="https://media.licdn.com/dms/image/D4E03AQFJozX4LWQdWA/profile-displayphoto-shrink_400_400/0/1692710017446?e=1724889600&v=beta&t=99eg61C1yTo62nMmVZMppIq7eeS5kwzvbjvTXTJgDvs"
-            alt="profile picture"
-          />
+          <img src={profilePictureSrc} alt="Picture of {user.name}" />
         </div>
       </div>
 
