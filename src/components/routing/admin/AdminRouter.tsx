@@ -13,6 +13,8 @@ import { useCreatePageLink } from "@/hooks/useCreatePageLink";
 import NotFound from "../../sections/NotFound/NotFound";
 import AdminCountries from "../../pages/admin/countries/AdminCountries";
 import AdminDashboardRouter from "./AdminDashboardRouter";
+import AdminAthletes from "@/components/pages/admin/athletes/AdminAthletes";
+import AdminAthletesRouter from "./AdminAthletesRouter";
 
 const PRIMARY_ACTIVE_COLOR = "#FB923C";
 const DEFAULT_COLOR = "#7295b0";
@@ -43,7 +45,7 @@ export function AdminRouter() {
           <Route path="/*" element={<AdminDashboardRouter />} />
           <Route path="/events" element={<div>Events Page</div>} />
           <Route path="/countries" element={<AdminCountries />} />
-          <Route path="/athletes" element={<div>Athletes Page</div>} />
+          <Route path="/athletes/*" element={<AdminAthletesRouter />} />
           <Route path="/sports" element={<div>Sports Page</div>} />
           <Route path="/medals" element={<div>Medlas Page</div>} />
           <Route path="/community" element={<div>Community Page</div>} />

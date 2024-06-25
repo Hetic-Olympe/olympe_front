@@ -46,8 +46,8 @@ export default function EventCalendar({ plugins, headerToolbar, initialView, isF
     // @TODO: Replace with real data fetched from the API endpoint
     const events = [
         { title: "Event 1", start: "2024-06-03T10:00:00", end: "2024-06-03T14:00:00", type: "sport" },
-        { title: "Event 2", start: "2024-06-03T19:00:00", end: "2024-06-03T21:00:00", type: "concert" },
-        { title: "Event 3", start: "2024-06-04T17:00:00", end: "2024-06-04T20:00:00", type: "sport" },
+        { title: "Event 2", start: "2024-06-05T19:00:00", end: "2024-06-05T21:00:00", type: "concert" },
+        { title: "Event 3", start: "2024-06-05T08:00:00", end: "2024-06-05T10:00:00", type: "sport" },
     ];
 
     const handleEventClick = useCallback((clickInfo: EventClickArg) => {

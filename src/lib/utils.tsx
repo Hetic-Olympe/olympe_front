@@ -10,7 +10,6 @@ export const zNotNullStringSchema = (field: string) => z.string().nullish().refi
   message: `${field} cannot be null`,
 });
 
-
 export const getCurrentDateInTimeZone = (timeZone: string) => {
   return new Date().toLocaleDateString('fr-FR', { timeZone });
 }

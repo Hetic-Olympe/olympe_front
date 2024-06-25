@@ -12,10 +12,12 @@ const useFetch = (path: string) => {
       setIsLoading(true);
       setError(false);
       try {
+        const isFormData = options.body instanceof FormData;
+
         const response = await fetch(`${baseUrl}${path}`, {
           ...options,
           headers: {
-            "Content-Type": "application/json",
+            ...(isFormData ? {} : { "Content-Type": "application/json" }),
             ...(user?.token ? { Authorization: `Bearer ${user.token}` } : {}),
             ...options.headers,
           },
