@@ -9,35 +9,6 @@ import { useToast } from "@/components/ui/use-toast";
 import styles from "./adminDashboard.module.scss";
 import { Link } from "react-router-dom";
 
-import Table from "@/components/sections/Table/Table";
-
-const data = [
-  {
-    id: 1,
-    name: "Name1",
-    email: "email1@example.com",
-    status: "active",
-    role: "admin",
-    total: 6,
-  },
-  {
-    id: 2,
-    name: "Name2",
-    email: "email2@example.com",
-    status: "inactive",
-    role: "user",
-    total: 2,
-  },
-  {
-    id: 3,
-    name: "Name3",
-    email: "email3@example.com",
-    status: "active",
-    role: "admin",
-    total: 5,
-  },
-];
-
 export enum RoleLabel {
   USER = "user",
   ADMIN = "admin",
@@ -101,12 +72,6 @@ export default function AdminDashboard() {
     getUsers();
   }, [fetchUsers, toast]);
 
-  const [usersData, setUsersData] = useState(data);
-
-  const deleteUser = (id: number) => {
-    const updatedData = usersData.filter((user) => user.id !== id);
-    setUsersData(updatedData);
-  };
   return (
     <>
       <Header
@@ -162,13 +127,6 @@ export default function AdminDashboard() {
                 ))}
               </div>
             </Card>
-          </GridItem>
-          <GridItem columnSpan={12}>
-            <Table
-              categoryName={["Name", "Email", "Status", "Role", "Total"]}
-              items={usersData}
-              deleteUser={deleteUser}
-            />
           </GridItem>
         </Grid>
       </PageTemplate>
