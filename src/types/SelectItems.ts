@@ -2,13 +2,9 @@ export interface Item {
   value: string;
   label: string;
 }
-export type SelectItems = Item[];
+export type Items = Item[];
 
-export const continentItems: SelectItems = [
-  {
-    value: "0",
-    label: "All",
-  },
+export const continentItems: Items = [
   {
     value: "1",
     label: "Africa",
@@ -39,11 +35,7 @@ export const continentItems: SelectItems = [
   },
 ];
 
-export const isParticipateItems: SelectItems = [
-  {
-    value: "null",
-    label: "All",
-  },
+export const isParticipateItems: Items = [
   {
     value: "true",
     label: "Participate",

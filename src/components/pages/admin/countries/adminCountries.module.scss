@@ -14,10 +14,14 @@
 
 .search_section,
 .filter_section {
-  margin-bottom: 32px;
+  margin-bottom: 16px;
 }
 
 .filter_section {
   display: flex;
-  gap: 32px;
+  gap: 8px;
+}
+
+.pagination_section {
+  margin-top: 16px;
 }

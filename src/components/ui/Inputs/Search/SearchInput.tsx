@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Input } from "../../input";
 import styles from "./searchInput.module.scss";
 import SearchIcon from "../../../icons/SearchIcon";
@@ -28,13 +28,17 @@ export const SearchInput = ({ onSearch, initValue }: props) => {
     [onSearch, debounceTimeout]
   );
 
+  useEffect(() => {
+    setInput(initValue);
+  }, [initValue]);
+
   return (
     <div className={styles.search_input}>
       <Input
-        placeholder="Search a country"
+        placeholder="Search"
         value={input}
         onChange={(e) => onChange(e.target.value)}
-        icon={<SearchIcon width="20" height="20" />}
+        icon={<SearchIcon width="16" />}
       />
     </div>
   );
