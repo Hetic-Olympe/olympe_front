@@ -5,6 +5,7 @@ import DataTableRowActions from "../DataTableRowActions";
 import { Switch } from "@/components/ui/switch";
 import ButtonTableHeader from "../ButtonTableHeader";
 import { Checkbox } from "@/components/ui/checkbox";
+import FlagCell from "../Cells/FlagCell";
 
 // A répartir dans les types
 export interface Continent {
@@ -115,6 +116,9 @@ export const getCountriesColumns = ({
         </ButtonTableHeader>
       );
     },
+    cell: ({ row }) => (
+      <FlagCell iso={row.original.iso} label={row.original.nicename} />
+    ),
   },
   {
     accessorKey: "iso",
