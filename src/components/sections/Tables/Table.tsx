@@ -69,7 +69,7 @@ export function DataTable<TData, TValue>({
             </TableRow>
           ))}
         </TableHeader>
-        {!isLoading ? (
+        {isLoading ? (
           <TableBody>
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 ">
