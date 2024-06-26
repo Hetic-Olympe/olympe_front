@@ -35,6 +35,12 @@ export enum SportFieldEnum {
   SKB = "Skateboarding",
   SUR = "Surfing",
 }
+export const sportItems = Object.entries(SportFieldEnum).map(
+  ([key, value]) => ({
+    label: value,
+    value: key.toLowerCase(),
+  })
+);
 export interface Country {
   nicename: string;
   iso: string;

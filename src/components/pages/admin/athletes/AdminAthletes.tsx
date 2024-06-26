@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import useFetch from "@/hooks/useFetch";
 import useFiltersAndPagination from "@/hooks/useFiltersAndPagination";
-import { Athlete } from "@/types/Athlete";
+import { Athlete, sportItems } from "@/types/Athlete";
 import { continentItems } from "@/types/SelectItems"; // Utiliser si applicable pour filtrer par pays
 import { UserIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -134,13 +134,51 @@ export default function AdminAthletes() {
 
   const columns = useMemo(
     () => [
+      // {
+      //   id: "select",
+      //   header: ({ table }) => (
+      //     <Checkbox
+      //       checked={
+      //         table.getIsAllPageRowsSelected() ||
+      //         (table.getIsSomePageRowsSelected() && "indeterminate")
+      //       }
+      //       onCheckedChange={(value) => {
+      //         table.toggleAllPageRowsSelected(!!value);
+      //         onSelectAll();
+      //       }}
+      //       aria-label="Select all"
+      //     />
+      //   ),
+      //   cell: ({ row }) => (
+      //     <Checkbox
+      //       checked={row.getIsSelected()}
+      //       onCheckedChange={(value) => {
+      //         row.toggleSelected(!!value);
+      //         onSelectOne(row.original.id);
+      //       }}
+      //       aria-label="Select row"
+      //     />
+      //   ),
+      //   enableSorting: false,
+      //   enableHiding: false,
+      // },
       {
-        accessorKey: "firstname",
-        header: "First Name",
-      },
-      {
-        accessorKey: "lastname",
-        header: "Last Name",
+        id: "profile",
+        header: "Profile",
+        cell: ({ row }) => (
+          <div className="flex items-center">
+            <img
+              src={row.original.pictureProfile}
+              alt="Profile"
+              className="w-8 h-8 rounded-full mr-2"
+            />
+            <div>
+              <div>
+                {row.original.firstname} {row.original.lastname}
+              </div>
+            </div>
+          </div>
+        ),
       },
       {
         accessorKey: "age",
@@ -149,17 +187,6 @@ export default function AdminAthletes() {
       {
         accessorKey: "gender",
         header: "Gender",
-      },
-      {
-        accessorKey: "pictureProfile",
-        header: "Profile Picture",
-        cell: ({ row }) => (
-          <img
-            src={row.original.pictureProfile}
-            alt="Profile"
-            className="w-8 h-8 rounded-full"
-          />
-        ),
       },
       {
         accessorKey: "country.nicename",
@@ -184,7 +211,7 @@ export default function AdminAthletes() {
         ),
       },
     ],
-    [onEdit, onDelete]
+    [onEdit, onDelete, onSelectAll, onSelectOne]
   );
 
   return (
@@ -218,13 +245,10 @@ export default function AdminAthletes() {
                 />
                 <FilterDropDown
                   onSelect={handleSelectSportField}
-                  title="Sport Fields"
+                  title="Sports"
                   initValue={filters.sportField || ""}
-                  label="Select a sport field"
-                  items={[
-                    { label: "Football", value: "football" },
-                    { label: "Basketball", value: "basketball" },
-                  ]} // Exemple d'items
+                  label="Select a sport"
+                  items={sportItems}
                 />
                 {hasAdditionalFilter && (
                   <Button variant="ghost" onClick={() => clearFilters()}>
