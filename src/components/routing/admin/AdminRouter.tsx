@@ -1,17 +1,18 @@
-import { Route, Routes } from "react-router-dom";
-import Nav from "../../sections/Nav/Nav";
-import {
-  HomeIcon,
-  CalendarIcon,
-  SportIcon,
-  AthleteIcon,
-  CommunityIcon,
-  MedalsIcon,
-  CountriesIcon,
-} from "../../icons/icons";
+import AdminAthletes from "@/components/pages/admin/athletes/AdminAthletes";
 import { useCreatePageLink } from "@/hooks/useCreatePageLink";
-import NotFound from "../../sections/NotFound/NotFound";
+import { Route, Routes } from "react-router-dom";
+import {
+  AthleteIcon,
+  CalendarIcon,
+  CommunityIcon,
+  CountriesIcon,
+  HomeIcon,
+  MedalsIcon,
+  SportIcon,
+} from "../../icons/icons";
 import AdminCountries from "../../pages/admin/countries/AdminCountries";
+import Nav from "../../sections/Nav/Nav";
+import NotFound from "../../sections/NotFound/NotFound";
 import AdminDashboardRouter from "./AdminDashboardRouter";
 
 const PRIMARY_ACTIVE_COLOR = "#FB923C";
@@ -43,7 +44,7 @@ export function AdminRouter() {
           <Route path="/*" element={<AdminDashboardRouter />} />
           <Route path="/events" element={<div>Events Page</div>} />
           <Route path="/countries" element={<AdminCountries />} />
-          <Route path="/athletes" element={<div>Athletes Page</div>} />
+          <Route path="/athletes" element={<AdminAthletes />} />
           <Route path="/sports" element={<div>Sports Page</div>} />
           <Route path="/medals" element={<div>Medlas Page</div>} />
           <Route path="/community" element={<div>Community Page</div>} />
