@@ -35,6 +35,7 @@ export const SearchInput = ({ onSearch, initValue }: props) => {
   return (
     <div className={styles.search_input}>
       <Input
+        className="focus-visible:ring-primary"
         placeholder="Search"
         value={input}
         onChange={(e) => onChange(e.target.value)}
