@@ -8,23 +8,15 @@ import { Grid, GridItem } from "@/components/ui/Grid/Grid";
 import { SearchInput } from "@/components/ui/Inputs/Search/SearchInput";
 import { Card } from "@/components/ui/Card/Card";
 import { continentItems, isParticipateItems } from "@/types/SelectItems";
-import { BasicFilters } from "@/types/Pagination";
+import { CountryFilters } from "@/types/Filters";
 import { PaginationTable } from "@/components/ui/Pagination/PaginationTable";
 import useFiltersAndPagination from "@/hooks/useFiltersAndPagination";
-import {
-  Country,
-  getCountriesColumns,
-} from "../../../sections/Tables/Countries/Columns";
+import { getCountriesColumns } from "../../../sections/Tables/Countries/Columns";
 import { DataTable } from "@/components/sections/Tables/Table";
 import { FilterDropDown } from "@/components/ui/Inputs/Filters/FilterDropDown";
 import { Button } from "@/components/ui/button";
 import CloseIcon from "@/components/icons/CloseIcon";
-
-export interface CountryFilters extends BasicFilters {
-  name: string | null;
-  continentId: string | null;
-  isParticipate: string | null;
-}
+import { Country } from "@/types/Country";
 
 export default function AdminCountries() {
   const { toast } = useToast();
@@ -190,11 +182,7 @@ export default function AdminCountries() {
       <PageTemplate>
         <Grid>
           <GridItem columnSpan={12}>
-            <Card
-              title="Countries"
-              isLoading={loadingFetchData}
-              minHeight={300}
-            >
+            <Card title="Countries" minHeight={300}>
               <div className={styles.filter_section}>
                 <SearchInput
                   onSearch={handleSearch}
@@ -221,17 +209,21 @@ export default function AdminCountries() {
                   </Button>
                 )}
               </div>
-
-              <DataTable columns={columns} data={countries} />
-
-              <div className={styles.pagination_section}>
-                <PaginationTable
-                  onPrevious={nextPage}
-                  onNext={previousPage}
-                  onChangePage={(index) => goToIndexPage(index)}
-                  page={filters.page}
-                  totalPages={totalPages}
+              <div>
+                <DataTable
+                  columns={columns}
+                  data={countries}
+                  isLoading={loadingFetchData}
                 />
+                <div className={styles.pagination_section}>
+                  <PaginationTable
+                    onPrevious={nextPage}
+                    onNext={previousPage}
+                    onChangePage={(index) => goToIndexPage(index)}
+                    page={filters.page}
+                    totalPages={totalPages}
+                  />
+                </div>
               </div>
             </Card>
           </GridItem>

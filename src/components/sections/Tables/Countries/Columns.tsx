@@ -6,25 +6,9 @@ import { Switch } from "@/components/ui/switch";
 import ButtonTableHeader from "../ButtonTableHeader";
 import { Checkbox } from "@/components/ui/checkbox";
 import FlagCell from "../Cells/FlagCell";
-
-// A répartir dans les types
-export interface Continent {
-  id: number;
-  name: string;
-}
-
-export interface Country {
-  id: number;
-  iso: string;
-  nicename: string;
-  isParticipate: boolean;
-  continent: Continent;
-}
-
-export interface Sort {
-  key: string;
-  order: "asc" | "desc";
-}
+import { Country } from "@/types/Country";
+import { Sort } from "@/types/Sort";
+import { getIsSorted, toogleSort } from "@/lib/utils-sorts";
 
 export interface CountryColumnsProps {
   onSelectAll: () => void;
@@ -37,34 +21,6 @@ export interface CountryColumnsProps {
     sortOrder: false | "asc" | "desc"
   ) => void;
   sorts: Sort[];
-}
-
-// 0 mettre dans un utils sorts
-export function getIsSorted(
-  sortingList: Sort[],
-  sortingKey: string
-): false | "asc" | "desc" {
-  for (const sort of sortingList) {
-    if (sort.key === sortingKey) {
-      return sort.order;
-    }
-  }
-  return false;
-}
-
-export function toogleSort(
-  order: false | "asc" | "desc"
-): false | "asc" | "desc" {
-  switch (order) {
-    case false:
-      return "asc";
-    case "asc":
-      return "desc";
-    case "desc":
-      return false;
-    default:
-      return false;
-  }
 }
 
 export const getCountriesColumns = ({
@@ -104,6 +60,8 @@ export const getCountriesColumns = ({
   },
   {
     accessorKey: "nicename",
+    enableResizing: true,
+    size: 380,
     header: () => {
       return (
         <ButtonTableHeader

@@ -1,5 +1,5 @@
-import { Sort } from "@/components/sections/Tables/Countries/Columns";
-import { BasicFilters } from "@/types/Pagination";
+import { BasicFilters } from "@/types/Filters";
+import { Sort } from "@/types/Sort";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
