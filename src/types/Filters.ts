@@ -10,3 +10,9 @@ export interface CountryFilters extends BasicFilters {
   continentId: string | null;
   isParticipate: string | null;
 }
+
+export interface UserFilters extends BasicFilters {
+  fullname: string | null;
+  roleId: string | null;
+  isConnected: string | null;
+}

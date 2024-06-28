@@ -3,46 +3,51 @@ import PageTemplate from "@/components/sections/PageTeample/PageTemplate";
 import { Grid, GridItem } from "@/components/ui/Grid/Grid";
 import { Card, KPICard } from "@/components/ui/Card/Card";
 import StatsIcon from "@/components/icons/StatsIcon";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import useFetch from "@/hooks/useFetch";
 import { useToast } from "@/components/ui/use-toast";
 import styles from "./adminDashboard.module.scss";
-import { Link } from "react-router-dom";
-
-export enum RoleLabel {
-  USER = "user",
-  ADMIN = "admin",
-}
-export interface SportField {
-  id: string;
-  label: string;
-}
-
-export interface Interest {
-  sportField: SportField;
-}
-
-export interface User {
-  id: string;
-  createdAt: string;
-  nicename: string;
-  email: string;
-  firstname: string;
-  lastname: string;
-  phone: string;
-  isConnected: boolean;
-  role: {
-    id: number;
-    label: RoleLabel;
-  };
-  interests: Interest[];
-  likes: string[];
-}
+import { DataTable } from "@/components/sections/Tables/Table";
+import useSelectRows from "@/hooks/useSelectRows";
+import useFiltersAndPagination from "@/hooks/useFiltersAndPagination";
+import { UserFilters } from "@/types/Filters";
+import { PaginationTable } from "@/components/ui/Pagination/PaginationTable";
+import { User } from "@/types/User";
+import { getUsersColumns } from "@/components/sections/Tables/Users/Columns";
+import { SearchInput } from "@/components/ui/Inputs/Search/SearchInput";
+import { FilterDropDown } from "@/components/ui/Inputs/Filters/FilterDropDown";
+import { isConnectedItems, roleItems } from "@/types/SelectItems";
+import { Button } from "@/components/ui/button";
+import CloseIcon from "@/components/icons/CloseIcon";
 
 export default function AdminDashboard() {
   const { toast } = useToast();
   const [users, setUsers] = useState<User[]>([]);
-  const { isLoading, fetchData: fetchUsers } = useFetch("/admin/api/users");
+  const { selectOne, selectAll } = useSelectRows<User>(users);
+
+  const {
+    filters,
+    hasAdditionalFilter,
+    apiParamsString,
+    totalPages,
+    sorts,
+    updateFilters,
+    updateSorts,
+    nextPage,
+    previousPage,
+    goToIndexPage,
+    setTotalPages,
+    clearFilters,
+  } = useFiltersAndPagination<UserFilters>([
+    "fullname",
+    "roleId",
+    "isConnected",
+  ]);
+
+  // -- FETCH
+  const { isLoading, fetchData: fetchUsers } = useFetch(
+    `/admin/api/users${apiParamsString}`
+  );
 
   const connectedUsersCount = useMemo(() => {
     return users.filter((user) => user.isConnected).length;
@@ -53,24 +58,77 @@ export default function AdminDashboard() {
     return users.filter((user) => user.createdAt.startsWith(today)).length;
   }, [users]);
 
-  useEffect(() => {
-    const getUsers = async () => {
-      try {
-        const { data } = await fetchUsers();
-        if (data) {
-          setUsers(data);
-        }
-      } catch (err) {
-        toast({
-          variant: "destructive",
-          title: "Fetch countries failed",
-          description: `Error: ${err}`,
-        });
+  const getCountries = useCallback(async () => {
+    try {
+      const { data } = await fetchUsers();
+      if (data) {
+        setUsers(data.users);
+        setTotalPages(data.totalPages);
       }
-    };
+    } catch (err) {
+      toast({
+        variant: "destructive",
+        title: "Fetch users failed",
+        description: `Error: ${err}`,
+      });
+    }
+  }, [fetchUsers, toast, setTotalPages]);
 
-    getUsers();
-  }, [fetchUsers, toast]);
+  useEffect(() => {
+    getCountries();
+  }, [getCountries]);
+
+  // -- LOGIC
+  const handleSearch = (fullname: string | null) => {
+    updateFilters("fullname", fullname);
+  };
+
+  const handleSelectRole = (roleId: string | null) => {
+    updateFilters("roleId", roleId);
+  };
+
+  const handleSelectIsConnected = (isConnected: string | null) => {
+    updateFilters("isConnected", isConnected);
+  };
+
+  const onSelectAll = useCallback(() => {
+    selectAll();
+  }, [selectAll]);
+
+  const onSelectOne = useCallback(
+    (userId: User["id"]) => {
+      selectOne(userId);
+    },
+    [selectOne]
+  );
+
+  const onDelete = (user: User) => {
+    alert(`Delete ${user.id}`);
+  };
+
+  const onEdit = (user: User) => {
+    alert(`Edit ${user.id}`);
+  };
+
+  const onSortingChanged = useCallback(
+    (sortKey: string, sortOrder: false | "asc" | "desc") => {
+      updateSorts(sortKey, sortOrder);
+    },
+    [updateSorts]
+  );
+
+  const columns = useMemo(
+    () =>
+      getUsersColumns({
+        onSelectAll,
+        onSelectOne,
+        onEdit,
+        onDelete,
+        onSortingChanged,
+        sorts,
+      }),
+    [sorts, onSortingChanged, onSelectAll, onSelectOne]
+  );
 
   return (
     <>
@@ -104,27 +162,51 @@ export default function AdminDashboard() {
         </Grid>
         <Grid>
           <GridItem columnSpan={12} rowSpan={3}>
-            <Card title="All users">
-              <div className={styles.usersList}>
-                {isLoading && <p>Loading...</p>}
-                {users.length === 0 && <p>No users found</p>}
-                {users.map((user) => (
-                  <Link
-                    className={styles.usersList__item}
-                    key={user.id}
-                    to={`/admin/user/${user.id}`}
-                  >
-                    <p>
-                      Name : {user.firstname} {user.lastname}
-                    </p>
-                    <p>Email : {user.email}</p>
-                    <p>
-                      Status :{" "}
-                      {user.isConnected ? "Connected" : "Not connected"}
-                    </p>
-                    <p>Role : {user.role.label}</p>
-                  </Link>
-                ))}
+            <Card title="All users" minHeight={300}>
+              <div className={styles.filter_section}>
+                <SearchInput
+                  onSearch={handleSearch}
+                  initValue={filters.fullname || ""}
+                  placeholder="Search by name"
+                />
+                <FilterDropDown
+                  onSelect={handleSelectRole}
+                  title="Roles"
+                  initValue={filters.roleId || ""}
+                  label="Select a role"
+                  items={roleItems}
+                />
+                <FilterDropDown
+                  onSelect={handleSelectIsConnected}
+                  title="Is Conected"
+                  initValue={filters.isConnected || ""}
+                  label="Filter by connected"
+                  items={isConnectedItems}
+                />
+                {hasAdditionalFilter && (
+                  <Button variant="ghost" onClick={() => clearFilters()}>
+                    Reset
+                    <CloseIcon width="16" />
+                  </Button>
+                )}
+              </div>
+              <div>
+                <DataTable
+                  columns={columns}
+                  data={users}
+                  isLoading={isLoading}
+                />
+                {totalPages > 1 && (
+                  <div className={styles.pagination_section}>
+                    <PaginationTable
+                      onPrevious={nextPage}
+                      onNext={previousPage}
+                      onChangePage={(index) => goToIndexPage(index)}
+                      page={filters.page}
+                      totalPages={totalPages}
+                    />
+                  </div>
+                )}
               </div>
             </Card>
           </GridItem>
