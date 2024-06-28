@@ -17,6 +17,7 @@ interface KPICardProps {
   title: string;
   value: number | string;
   icon: React.ReactNode;
+  isLoading?: boolean;
 }
 
 export const Card = ({
@@ -51,12 +52,16 @@ export const Card = ({
   );
 };
 
-export const KPICard = ({ title, value, icon }: KPICardProps) => {
+export const KPICard = ({ title, value, icon, isLoading }: KPICardProps) => {
   return (
     <div className={`${styles.card} ${styles["card--kpi"]}`}>
       <div className={styles["card--kpi__content"]}>
         <h3 className={styles["card--kpi__content__title"]}>{title}</h3>
-        <p className={styles["card--kpi__content__value"]}>{value}</p>
+        {isLoading ? (
+          <LoadingSpinner className={styles.card__loadingSpinner} size="l" />
+        ) : (
+          <p className={styles["card--kpi__content__value"]}>{value}</p>
+        )}
       </div>
       <div className={styles["card--kpi__icon"]}>{icon}</div>
     </div>

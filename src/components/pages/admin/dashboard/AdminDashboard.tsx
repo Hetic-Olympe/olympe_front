@@ -20,9 +20,20 @@ import { isConnectedItems, roleItems } from "@/types/SelectItems";
 import { Button } from "@/components/ui/button";
 import CloseIcon from "@/components/icons/CloseIcon";
 
+export interface UsersKpis {
+  totalUsers: number;
+  totalUsersActive: number;
+  totalNewUsers: number;
+}
+
 export default function AdminDashboard() {
   const { toast } = useToast();
   const [users, setUsers] = useState<User[]>([]);
+  const [usersKpis, setUsersKpis] = useState<UsersKpis>({
+    totalUsers: 0,
+    totalUsersActive: 0,
+    totalNewUsers: 0,
+  });
   const { selectOne, selectAll } = useSelectRows<User>(users);
 
   const {
@@ -45,20 +56,29 @@ export default function AdminDashboard() {
   ]);
 
   // -- FETCH
-  const { isLoading, fetchData: fetchUsers } = useFetch(
+  const { isLoading: fetchUsersLoading, fetchData: fetchUsers } = useFetch(
     `/admin/api/users${apiParamsString}`
   );
 
-  const connectedUsersCount = useMemo(() => {
-    return users.filter((user) => user.isConnected).length;
-  }, [users]);
+  const { isLoading: fetchUsersKpisLoading, fetchData: fetchUsersKpis } =
+    useFetch(`/admin/api/users/kpis`);
 
-  const newUsersCount = useMemo(() => {
-    const today = new Date().toISOString().split("T")[0];
-    return users.filter((user) => user.createdAt.startsWith(today)).length;
-  }, [users]);
+  const getUsersKpis = useCallback(async () => {
+    try {
+      const { data } = await fetchUsersKpis();
+      if (data) {
+        setUsersKpis(data);
+      }
+    } catch (err) {
+      toast({
+        variant: "destructive",
+        title: "Fetch users failed",
+        description: `Error: ${err}`,
+      });
+    }
+  }, [setUsersKpis, fetchUsersKpis, toast]);
 
-  const getCountries = useCallback(async () => {
+  const getUsers = useCallback(async () => {
     try {
       const { data } = await fetchUsers();
       if (data) {
@@ -72,11 +92,27 @@ export default function AdminDashboard() {
         description: `Error: ${err}`,
       });
     }
-  }, [fetchUsers, toast, setTotalPages]);
+  }, [fetchUsers, toast, setTotalPages, setUsers]);
+
+  const totalUsersCount = useMemo(() => {
+    return usersKpis.totalUsers;
+  }, [usersKpis]);
+
+  const connectedUsersCount = useMemo(() => {
+    return usersKpis.totalUsersActive;
+  }, [usersKpis]);
+
+  const newUsersCount = useMemo(() => {
+    return usersKpis.totalNewUsers;
+  }, [usersKpis]);
 
   useEffect(() => {
-    getCountries();
-  }, [getCountries]);
+    getUsers();
+  }, [getUsers]);
+
+  useEffect(() => {
+    getUsersKpis();
+  }, [getUsersKpis]);
 
   // -- LOGIC
   const handleSearch = (fullname: string | null) => {
@@ -141,7 +177,8 @@ export default function AdminDashboard() {
           <GridItem columnSpan={3}>
             <KPICard
               title="Total users"
-              value={users.length}
+              value={totalUsersCount}
+              isLoading={fetchUsersKpisLoading}
               icon={<StatsIcon color={"#FB923C"} />}
             />
           </GridItem>
@@ -149,6 +186,7 @@ export default function AdminDashboard() {
             <KPICard
               title="Connected"
               value={connectedUsersCount}
+              isLoading={fetchUsersKpisLoading}
               icon={<StatsIcon color={"#FB923C"} />}
             />
           </GridItem>
@@ -156,6 +194,7 @@ export default function AdminDashboard() {
             <KPICard
               title="New users"
               value={newUsersCount}
+              isLoading={fetchUsersKpisLoading}
               icon={<StatsIcon color={"#FB923C"} />}
             />
           </GridItem>
@@ -194,7 +233,7 @@ export default function AdminDashboard() {
                 <DataTable
                   columns={columns}
                   data={users}
-                  isLoading={isLoading}
+                  isLoading={fetchUsersLoading}
                 />
                 {totalPages > 1 && (
                   <div className={styles.pagination_section}>
