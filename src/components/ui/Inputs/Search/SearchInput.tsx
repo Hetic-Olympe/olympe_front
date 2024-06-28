@@ -5,10 +5,11 @@ import SearchIcon from "../../../icons/SearchIcon";
 
 type props = {
   onSearch: (key: string | null) => void;
+  placeholder: string;
   initValue: string;
 };
 
-export const SearchInput = ({ onSearch, initValue }: props) => {
+export const SearchInput = ({ onSearch, initValue, placeholder }: props) => {
   const [input, setInput] = useState(initValue);
   const [debounceTimeout, setDebounceTimeout] = useState<NodeJS.Timeout | null>(
     null
@@ -36,7 +37,7 @@ export const SearchInput = ({ onSearch, initValue }: props) => {
     <div className={styles.search_input}>
       <Input
         className="focus-visible:ring-primary"
-        placeholder="Search"
+        placeholder={placeholder}
         value={input}
         onChange={(e) => onChange(e.target.value)}
         icon={<SearchIcon width="16" />}
