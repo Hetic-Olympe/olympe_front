@@ -45,3 +45,24 @@ export const isParticipateItems: Items = [
     label: "No participate",
   },
 ];
+
+export const roleItems: Items = [
+  {
+    value: "1",
+    label: "Admin",
+  },
+  {
+    value: "2",
+    label: "User",
+  },
+];
+export const isConnectedItems: Items = [
+  {
+    value: "true",
+    label: "Active",
+  },
+  {
+    value: "false",
+    label: "Inactive",
+  },
+];

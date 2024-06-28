@@ -6,10 +6,10 @@ import { useToast } from "@/components/ui/use-toast";
 import useFetch from "@/hooks/useFetch";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { User } from "../../admin/dashboard/AdminDashboard";
 import UserContributions from "./UserContributions";
 import UserInformationForm from "./UserInformationForm";
 import UserInterests from "./UserInterests";
+import { User } from "@/types/User";
 
 interface AdminUserDetailProps {
   id?: string | null | undefined;
