@@ -1,20 +1,14 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import DataTableRowActions from "../DataTableRowActions";
 import { Switch } from "@/components/ui/switch";
 import ButtonTableHeader from "../ButtonTableHeader";
-import { Checkbox } from "@/components/ui/checkbox";
 import FlagCell from "../Cells/FlagCell";
 import { Country } from "@/types/Country";
 import { Sort } from "@/types/Sort";
 import { getIsSorted, toogleSort } from "@/lib/utils-sorts";
 
 export interface CountryColumnsProps {
-  onSelectAll: () => void;
-  onSelectOne: (countryId: Country["id"]) => void;
-  onEdit: (value: Country) => void;
-  onDelete: (value: Country) => void;
   onParticipateChanged: (value: Country) => void;
   onSortingChanged: (
     sortKey: string,
@@ -24,40 +18,10 @@ export interface CountryColumnsProps {
 }
 
 export const getCountriesColumns = ({
-  onSelectAll,
-  onSelectOne,
-  onEdit,
-  onDelete,
   onParticipateChanged,
   onSortingChanged,
   sorts,
 }: CountryColumnsProps): ColumnDef<Country>[] => [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => {
-          table.toggleAllPageRowsSelected(!!value), onSelectAll();
-        }}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => {
-          row.toggleSelected(!!value), onSelectOne(row.original.id);
-        }}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
   {
     accessorKey: "nicename",
     enableResizing: true,
@@ -129,14 +93,6 @@ export const getCountriesColumns = ({
             checked={country.isParticipate}
           />
         </div>
-      );
-    },
-  },
-  {
-    id: "actions",
-    cell: ({ row }) => {
-      return (
-        <DataTableRowActions row={row} onEdit={onEdit} onDelete={onDelete} />
       );
     },
   },
