@@ -21,7 +21,7 @@ import { Country } from "@/types/Country";
 export default function AdminCountries() {
   const { toast } = useToast();
   const [countries, setCountries] = useState<Country[]>([]);
-  const [selectedRows, setSelectedRows] = useState<(string | number)[]>([]);
+
   // -- FILTERS AND PAGINATION
   const {
     filters,
@@ -69,7 +69,6 @@ export default function AdminCountries() {
   }, [fetchCountries, toast, setTotalPages]);
 
   useEffect(() => {
-    console.log("COUNTRY");
     getCountries();
   }, [getCountries]);
 
@@ -115,43 +114,6 @@ export default function AdminCountries() {
     updateFilters("isParticipate", isParticipate);
   };
 
-  const onSelectAll = useCallback(() => {
-    if (selectedRows.length === countries.length) {
-      setSelectedRows([]);
-    } else {
-      const countriesId = countries.map((country) => country.id);
-      setSelectedRows([...countriesId]);
-    }
-  }, [countries, selectedRows]);
-
-  const onSelectOne = useCallback(
-    (countryId: Country["id"]) => {
-      if (selectedRows.includes(countryId)) {
-        setSelectedRows((previousSelectedRow) => [
-          ...previousSelectedRow.filter((id) => id !== countryId),
-        ]);
-      } else {
-        setSelectedRows((previousSelectedRow) => [
-          ...previousSelectedRow,
-          countryId,
-        ]);
-      }
-    },
-    [selectedRows]
-  );
-
-  useEffect(() => {
-    console.log("SELECTED ROWS", selectedRows);
-  }, [selectedRows]);
-
-  const onDelete = (country: Country) => {
-    alert(`Delete ${country.id}`);
-  };
-
-  const onEdit = (country: Country) => {
-    alert(`Edit ${country.id}`);
-  };
-
   const onSortingChanged = useCallback(
     (sortKey: string, sortOrder: false | "asc" | "desc") => {
       updateSorts(sortKey, sortOrder);
@@ -162,15 +124,11 @@ export default function AdminCountries() {
   const columns = useMemo(
     () =>
       getCountriesColumns({
-        onSelectAll,
-        onSelectOne,
-        onEdit,
-        onDelete,
         onParticipateChanged,
         onSortingChanged,
         sorts,
       }),
-    [onParticipateChanged, sorts, onSortingChanged, onSelectAll, onSelectOne]
+    [onParticipateChanged, sorts, onSortingChanged]
   );
 
   return (
@@ -182,11 +140,12 @@ export default function AdminCountries() {
       <PageTemplate>
         <Grid>
           <GridItem columnSpan={12}>
-            <Card title="Countries" minHeight={300}>
+            <Card title="All Countries" minHeight={300}>
               <div className={styles.filter_section}>
                 <SearchInput
                   onSearch={handleSearch}
                   initValue={filters.name || ""}
+                  placeholder="Search by name"
                 />
                 <FilterDropDown
                   onSelect={handleSelectContinent}
@@ -215,15 +174,17 @@ export default function AdminCountries() {
                   data={countries}
                   isLoading={loadingFetchData}
                 />
-                <div className={styles.pagination_section}>
-                  <PaginationTable
-                    onPrevious={nextPage}
-                    onNext={previousPage}
-                    onChangePage={(index) => goToIndexPage(index)}
-                    page={filters.page}
-                    totalPages={totalPages}
-                  />
-                </div>
+                {totalPages > 1 && (
+                  <div className={styles.pagination_section}>
+                    <PaginationTable
+                      onPrevious={nextPage}
+                      onNext={previousPage}
+                      onChangePage={(index) => goToIndexPage(index)}
+                      page={filters.page}
+                      totalPages={totalPages}
+                    />
+                  </div>
+                )}
               </div>
             </Card>
           </GridItem>
