@@ -1,22 +1,17 @@
-"use client";
-
-import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
 import { Athlete } from "@/types/Athlete";
-import { Sort } from "@/types/Sort";
-import { ColumnDef } from "@tanstack/react-table";
-import ProfilePictureCell from "../Cells/ProfilePictureCell"; // Assurez-vous d'avoir ce composant pour afficher les images
-import DataTableRowActions from "../DataTableRowActions";
+import { DeleteIcon, Edit2Icon } from "lucide-react";
 
 export interface AthleteColumnsProps {
   onSelectAll: () => void;
-  onSelectOne: (athleteId: Athlete["id"]) => void;
+  onSelectOne: (id: number) => void;
   onEdit: (athlete: Athlete) => void;
   onDelete: (athlete: Athlete) => void;
   onSortingChanged: (
     sortKey: string,
     sortOrder: false | "asc" | "desc"
   ) => void;
-  sorts: Sort[];
+  sorts: Record<string, "asc" | "desc">;
 }
 
 export const getAthletesColumns = ({
@@ -26,68 +21,56 @@ export const getAthletesColumns = ({
   onDelete,
   onSortingChanged,
   sorts,
-}: AthleteColumnsProps): ColumnDef<Athlete>[] => [
+}: AthleteColumnsProps) => [
   {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => {
-          table.toggleAllPageRowsSelected(!!value), onSelectAll();
-        }}
-        aria-label="Select all"
-      />
+    id: "profile",
+    header: "Profile",
+    cell: ({ row }: { row: { original: Athlete } }) => (
+      <div className="flex items-center">
+        <img
+          src={row.original.pictureProfile}
+          alt="Profile"
+          className="w-8 h-8 rounded-full mr-2"
+        />
+        <div>
+          <div>
+            {row.original.firstname} {row.original.lastname}
+          </div>
+        </div>
+      </div>
     ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => {
-          row.toggleSelected(!!value), onSelectOne(row.original.id);
-        }}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "firstname",
-    header: "First Name",
-  },
-  {
-    accessorKey: "lastname",
-    header: "Last Name",
   },
   {
     accessorKey: "age",
     header: "Age",
+    enableSorting: true,
   },
   {
     accessorKey: "gender",
     header: "Gender",
+    enableSorting: true,
   },
   {
-    accessorKey: "pictureProfile",
-    header: "Profile Picture",
-    cell: ({ row }) => (
-      <ProfilePictureCell imageSrc={row.original.pictureProfile} />
-    ),
-  },
-  {
-    accessorKey: "country",
+    accessorKey: "country.nicename",
     header: "Country",
+    enableSorting: true,
   },
   {
     accessorKey: "sportField",
     header: "Sport",
+    enableSorting: true,
   },
   {
     id: "actions",
-    cell: ({ row }) => (
-      <DataTableRowActions row={row} onEdit={onEdit} onDelete={onDelete} />
+    cell: ({ row }: { row: { original: Athlete } }) => (
+      <div className="flex justify-center">
+        <Button onClick={() => onEdit(row.original)}>
+          <Edit2Icon />
+        </Button>
+        <Button variant="destructive" onClick={() => onDelete(row.original)}>
+          <DeleteIcon />
+        </Button>
+      </div>
     ),
   },
 ];

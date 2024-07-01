@@ -1,34 +1,29 @@
-import CloseIcon from "@/components/icons/CloseIcon";
+import { getAthleteFiltersDef } from "@/components/sections/Filters/FiltersDef/FiltersDefAthletes";
+import {
+  FilterDef,
+  FiltersSection,
+} from "@/components/sections/Filters/FiltersSection";
 import Header from "@/components/sections/Header/Header";
 import PageTemplate from "@/components/sections/PageTeample/PageTemplate";
+import { getAthletesColumns } from "@/components/sections/Tables/Athletes/Columns";
 import { DataTable } from "@/components/sections/Tables/Table";
-import { Card, KPICard } from "@/components/ui/Card/Card";
+import { Card } from "@/components/ui/Card/Card";
 import { Grid, GridItem } from "@/components/ui/Grid/Grid";
-import { FilterDropDown } from "@/components/ui/Inputs/Filters/FilterDropDown";
-import { SearchInput } from "@/components/ui/Inputs/Search/SearchInput";
 import { PaginationTable } from "@/components/ui/Pagination/PaginationTable";
-import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import useFetch from "@/hooks/useFetch";
 import useFiltersAndPagination from "@/hooks/useFiltersAndPagination";
-import { Athlete, sportItems } from "@/types/Athlete";
-import { continentItems } from "@/types/SelectItems"; // Utiliser si applicable pour filtrer par pays
-import { UserIcon } from "lucide-react";
+import useSelectRows from "@/hooks/useSelectRows";
+import { Athlete } from "@/types/Athlete";
+import { AthleteFilters } from "@/types/Filters";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import styles from "./adminAthletes.module.scss";
-
-// Adapter les types de filtres pour les athlètes
-type AthleteFilters = {
-  name?: string;
-  countryId?: string;
-  sportField?: string;
-};
 
 export default function AdminAthletes() {
   const { toast } = useToast();
   const [athletes, setAthletes] = useState<Athlete[]>([]);
-  const [selectedRows, setSelectedRows] = useState<(string | number)[]>([]);
-  // -- FILTERS AND PAGINATION
+  const { selectOne, selectAll } = useSelectRows<Athlete>(athletes);
+
   const {
     filters,
     hasAdditionalFilter,
@@ -48,15 +43,12 @@ export default function AdminAthletes() {
     "sportField",
   ]);
 
-  // -- FETCH
-  const { isLoading: loadingFetchData, fetchData: fetchAthletes } = useFetch(
-    `/admin/api/athletes${apiParamsString}`
-  );
+  const { isLoading: fetchAthletesLoading, fetchData: fetchAthletes } =
+    useFetch(`/admin/api/athletes${apiParamsString}`);
 
   const getAthletes = useCallback(async () => {
     try {
       const { data } = await fetchAthletes();
-
       if (data) {
         setAthletes(data.athletes);
         setTotalPages(data.totalPages);
@@ -68,54 +60,22 @@ export default function AdminAthletes() {
         description: `Error: ${err}`,
       });
     }
-  }, [fetchAthletes, toast, setTotalPages]);
+  }, [fetchAthletes, toast, setTotalPages, setAthletes]);
 
   useEffect(() => {
-    console.log("ATHLETES");
     getAthletes();
   }, [getAthletes]);
 
-  // -- LOGIC
-  const handleSearch = (name: string | null) => {
-    updateFilters("name", name);
-  };
-
-  const handleSelectCountry = (countryId: string | null) => {
-    updateFilters("countryId", countryId);
-  };
-
-  const handleSelectSportField = (sportField: string | null) => {
-    updateFilters("sportField", sportField);
-  };
-
   const onSelectAll = useCallback(() => {
-    if (selectedRows.length === athletes.length) {
-      setSelectedRows([]);
-    } else {
-      const athletesId = athletes.map((athlete) => athlete.id);
-      setSelectedRows([...athletesId]);
-    }
-  }, [athletes, selectedRows]);
+    selectAll();
+  }, [selectAll]);
 
   const onSelectOne = useCallback(
     (athleteId: Athlete["id"]) => {
-      if (selectedRows.includes(athleteId)) {
-        setSelectedRows((previousSelectedRow) => [
-          ...previousSelectedRow.filter((id) => id !== athleteId),
-        ]);
-      } else {
-        setSelectedRows((previousSelectedRow) => [
-          ...previousSelectedRow,
-          athleteId,
-        ]);
-      }
+      selectOne(athleteId);
     },
-    [selectedRows]
+    [selectOne]
   );
-
-  useEffect(() => {
-    console.log("SELECTED ROWS", selectedRows);
-  }, [selectedRows]);
 
   const onDelete = (athlete: Athlete) => {
     alert(`Delete ${athlete.id}`);
@@ -133,85 +93,25 @@ export default function AdminAthletes() {
   );
 
   const columns = useMemo(
-    () => [
-      // {
-      //   id: "select",
-      //   header: ({ table }) => (
-      //     <Checkbox
-      //       checked={
-      //         table.getIsAllPageRowsSelected() ||
-      //         (table.getIsSomePageRowsSelected() && "indeterminate")
-      //       }
-      //       onCheckedChange={(value) => {
-      //         table.toggleAllPageRowsSelected(!!value);
-      //         onSelectAll();
-      //       }}
-      //       aria-label="Select all"
-      //     />
-      //   ),
-      //   cell: ({ row }) => (
-      //     <Checkbox
-      //       checked={row.getIsSelected()}
-      //       onCheckedChange={(value) => {
-      //         row.toggleSelected(!!value);
-      //         onSelectOne(row.original.id);
-      //       }}
-      //       aria-label="Select row"
-      //     />
-      //   ),
-      //   enableSorting: false,
-      //   enableHiding: false,
-      // },
-      {
-        id: "profile",
-        header: "Profile",
-        cell: ({ row }) => (
-          <div className="flex items-center">
-            <img
-              src={row.original.pictureProfile}
-              alt="Profile"
-              className="w-8 h-8 rounded-full mr-2"
-            />
-            <div>
-              <div>
-                {row.original.firstname} {row.original.lastname}
-              </div>
-            </div>
-          </div>
-        ),
-      },
-      {
-        accessorKey: "age",
-        header: "Age",
-      },
-      {
-        accessorKey: "gender",
-        header: "Gender",
-      },
-      {
-        accessorKey: "country.nicename",
-        header: "Country",
-      },
-      {
-        accessorKey: "sportField",
-        header: "Sport",
-      },
-      {
-        id: "actions",
-        cell: ({ row }) => (
-          <div className="flex justify-center">
-            <Button onClick={() => onEdit(row.original)}>Edit</Button>
-            <Button
-              variant="destructive"
-              onClick={() => onDelete(row.original)}
-            >
-              Delete
-            </Button>
-          </div>
-        ),
-      },
-    ],
-    [onEdit, onDelete, onSelectAll, onSelectOne]
+    () =>
+      getAthletesColumns({
+        onSelectAll,
+        onSelectOne,
+        onEdit,
+        onDelete,
+        onSortingChanged,
+        sorts,
+      }),
+    [sorts, onSortingChanged, onSelectAll, onSelectOne]
+  );
+
+  const filtersDef = useMemo(
+    () =>
+      getAthleteFiltersDef({
+        updateFilters,
+        filters,
+      }),
+    [updateFilters, filters]
   );
 
   return (
@@ -222,56 +122,33 @@ export default function AdminAthletes() {
       />
       <PageTemplate>
         <Grid>
-          <GridItem columnSpan={3}>
-            <KPICard
-              title="Total athletes"
-              value={athletes?.length ?? 0} // Vérification ici
-              icon={<UserIcon color={"#FB923C"} />}
-            />
-          </GridItem>
-          <GridItem columnSpan={12}>
-            <Card title="Athletes" minHeight={300}>
-              <div className={styles.filter_section}>
-                <SearchInput
-                  onSearch={handleSearch}
-                  initValue={filters.name || ""}
-                />
-                <FilterDropDown
-                  onSelect={handleSelectCountry}
-                  title="Countries"
-                  initValue={filters.countryId || ""}
-                  label="Select a country"
-                  items={continentItems} // Utiliser une liste d'items pertinents pour les pays
-                />
-                <FilterDropDown
-                  onSelect={handleSelectSportField}
-                  title="Sports"
-                  initValue={filters.sportField || ""}
-                  label="Select a sport"
-                  items={sportItems}
-                />
-                {hasAdditionalFilter && (
-                  <Button variant="ghost" onClick={() => clearFilters()}>
-                    Reset
-                    <CloseIcon width="16" />
-                  </Button>
+          <GridItem columnSpan={12} rowSpan={3}>
+            <Card title="All athletes" minHeight={300}>
+              <FiltersSection
+                filters={filtersDef.map(
+                  (filter, index) => ({ ...filter, key: index } as FilterDef)
                 )}
-              </div>
+                hasAdditionalFilter={hasAdditionalFilter}
+                clear={true}
+                clearFilters={() => clearFilters()}
+              />
               <div>
                 <DataTable
                   columns={columns}
                   data={athletes}
-                  isLoading={loadingFetchData}
+                  isLoading={fetchAthletesLoading}
                 />
-                <div className={styles.pagination_section}>
-                  <PaginationTable
-                    onPrevious={previousPage}
-                    onNext={nextPage}
-                    onChangePage={(index) => goToIndexPage(index)}
-                    page={filters.page}
-                    totalPages={totalPages}
-                  />
-                </div>
+                {totalPages > 1 && (
+                  <div className={styles.pagination_section}>
+                    <PaginationTable
+                      onPrevious={nextPage}
+                      onNext={previousPage}
+                      onChangePage={(index) => goToIndexPage(index)}
+                      page={filters.page}
+                      totalPages={totalPages}
+                    />
+                  </div>
+                )}
               </div>
             </Card>
           </GridItem>

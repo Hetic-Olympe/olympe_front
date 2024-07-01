@@ -16,3 +16,9 @@ export interface UserFilters extends BasicFilters {
   roleId: string | null;
   isConnected: string | null;
 }
+
+export interface AthleteFilters extends BasicFilters {
+  name: string | null;
+  countryId: string | null;
+  sportField: string | null;
+}

@@ -1,21 +1,21 @@
+import StatsIcon from "@/components/icons/StatsIcon";
+import { getUserFiltersDef } from "@/components/sections/Filters/FiltersDef/FiltersDefUsers";
+import { FiltersSection } from "@/components/sections/Filters/FiltersSection";
 import Header from "@/components/sections/Header/Header";
 import PageTemplate from "@/components/sections/PageTeample/PageTemplate";
-import { Grid, GridItem } from "@/components/ui/Grid/Grid";
-import { Card, KPICard } from "@/components/ui/Card/Card";
-import StatsIcon from "@/components/icons/StatsIcon";
-import { useState, useEffect, useMemo, useCallback } from "react";
-import useFetch from "@/hooks/useFetch";
-import { useToast } from "@/components/ui/use-toast";
-import styles from "./adminDashboard.module.scss";
 import { DataTable } from "@/components/sections/Tables/Table";
-import useSelectRows from "@/hooks/useSelectRows";
-import useFiltersAndPagination from "@/hooks/useFiltersAndPagination";
-import { UserFilters } from "@/types/Filters";
-import { PaginationTable } from "@/components/ui/Pagination/PaginationTable";
-import { User } from "@/types/User";
 import { getUsersColumns } from "@/components/sections/Tables/Users/Columns";
-import { FiltersSection } from "@/components/sections/Filters/FiltersSection";
-import { getUserFiltersDef } from "@/components/sections/Filters/FiltersDef/FiltersDefUsers";
+import { Card, KPICard } from "@/components/ui/Card/Card";
+import { Grid, GridItem } from "@/components/ui/Grid/Grid";
+import { PaginationTable } from "@/components/ui/Pagination/PaginationTable";
+import { useToast } from "@/components/ui/use-toast";
+import useFetch from "@/hooks/useFetch";
+import useFiltersAndPagination from "@/hooks/useFiltersAndPagination";
+import useSelectRows from "@/hooks/useSelectRows";
+import { UserFilters } from "@/types/Filters";
+import { User } from "@/types/User";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import styles from "./adminDashboard.module.scss";
 
 export interface UsersKpis {
   totalUsers: number;
