@@ -14,11 +14,8 @@ import { UserFilters } from "@/types/Filters";
 import { PaginationTable } from "@/components/ui/Pagination/PaginationTable";
 import { User } from "@/types/User";
 import { getUsersColumns } from "@/components/sections/Tables/Users/Columns";
-import { SearchInput } from "@/components/ui/Inputs/Search/SearchInput";
-import { FilterDropDown } from "@/components/ui/Inputs/Filters/FilterDropDown";
-import { isConnectedItems, roleItems } from "@/types/SelectItems";
-import { Button } from "@/components/ui/button";
-import CloseIcon from "@/components/icons/CloseIcon";
+import { FiltersSection } from "@/components/sections/Filters/FiltersSection";
+import { getUserFiltersDef } from "@/components/sections/Filters/FiltersDef/FiltersDefUsers";
 
 export interface UsersKpis {
   totalUsers: number;
@@ -114,19 +111,6 @@ export default function AdminDashboard() {
     getUsersKpis();
   }, [getUsersKpis]);
 
-  // -- LOGIC
-  const handleSearch = (fullname: string | null) => {
-    updateFilters("fullname", fullname);
-  };
-
-  const handleSelectRole = (roleId: string | null) => {
-    updateFilters("roleId", roleId);
-  };
-
-  const handleSelectIsConnected = (isConnected: string | null) => {
-    updateFilters("isConnected", isConnected);
-  };
-
   const onSelectAll = useCallback(() => {
     selectAll();
   }, [selectAll]);
@@ -166,6 +150,15 @@ export default function AdminDashboard() {
     [sorts, onSortingChanged, onSelectAll, onSelectOne]
   );
 
+  const filtersDef = useMemo(
+    () =>
+      getUserFiltersDef({
+        updateFilters,
+        filters,
+      }),
+    [updateFilters, filters]
+  );
+
   return (
     <>
       <Header
@@ -202,33 +195,12 @@ export default function AdminDashboard() {
         <Grid>
           <GridItem columnSpan={12} rowSpan={3}>
             <Card title="All users" minHeight={300}>
-              <div className={styles.filter_section}>
-                <SearchInput
-                  onSearch={handleSearch}
-                  initValue={filters.fullname || ""}
-                  placeholder="Search by name"
-                />
-                <FilterDropDown
-                  onSelect={handleSelectRole}
-                  title="Roles"
-                  initValue={filters.roleId || ""}
-                  label="Select a role"
-                  items={roleItems}
-                />
-                <FilterDropDown
-                  onSelect={handleSelectIsConnected}
-                  title="Is Conected"
-                  initValue={filters.isConnected || ""}
-                  label="Filter by connected"
-                  items={isConnectedItems}
-                />
-                {hasAdditionalFilter && (
-                  <Button variant="ghost" onClick={() => clearFilters()}>
-                    Reset
-                    <CloseIcon width="16" />
-                  </Button>
-                )}
-              </div>
+              <FiltersSection
+                filters={filtersDef}
+                hasAdditionalFilter={hasAdditionalFilter}
+                clear={true}
+                clearFilters={() => clearFilters()}
+              />
               <div>
                 <DataTable
                   columns={columns}
