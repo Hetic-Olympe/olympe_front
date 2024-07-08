@@ -14,13 +14,13 @@ import styles from "./dataTableRowActions.module.scss";
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
   onEdit: (value: TData) => void;
-  onDelete: (value: TData) => void;
+  onArchive: (value: TData) => void;
 }
 
 const DataTableRowActions = <TData,>({
   row,
   onEdit,
-  onDelete,
+  onArchive,
 }: DataTableRowActionsProps<TData>) => {
   return (
     <DropdownMenu>
@@ -32,8 +32,8 @@ const DataTableRowActions = <TData,>({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className={styles.dropdown__content}>
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuItem onClick={() => onDelete(row.original)}>
-          Delete
+        <DropdownMenuItem onClick={() => onArchive(row.original)}>
+          Archive
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => onEdit(row.original)}>
           Edit

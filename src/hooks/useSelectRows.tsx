@@ -1,3 +1,4 @@
+import { SelectedRows } from "@/types/SelectRows";
 import { useCallback, useState } from "react";
 
 export interface BasicEntity {
@@ -5,7 +6,7 @@ export interface BasicEntity {
 }
 
 const useSelectRows = <T extends BasicEntity>(datas: T[]) => {
-  const [selectedRows, setSelectedRows] = useState<(string | number)[]>([]);
+  const [selectedRows, setSelectedRows] = useState<SelectedRows>([]);
 
   const selectOne = useCallback(
     (entityId: T["id"]) => {
@@ -32,6 +33,10 @@ const useSelectRows = <T extends BasicEntity>(datas: T[]) => {
     }
   }, [datas, selectedRows]);
 
-  return { selectOne, selectAll };
+  const clearRows = useCallback(() => {
+    setSelectedRows([]);
+  }, []);
+
+  return { selectedRows, selectOne, selectAll, clearRows };
 };
 export default useSelectRows;

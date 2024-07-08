@@ -16,6 +16,7 @@ import { User } from "@/types/User";
 import { getUsersColumns } from "@/components/sections/Tables/Users/Columns";
 import { FiltersSection } from "@/components/sections/Filters/FiltersSection";
 import { getUserFiltersDef } from "@/components/sections/Filters/FiltersDef/FiltersDefUsers";
+import { SelectedRows } from "@/types/SelectRows";
 
 export interface UsersKpis {
   totalUsers: number;
@@ -31,7 +32,8 @@ export default function AdminDashboard() {
     totalUsersActive: 0,
     totalNewUsers: 0,
   });
-  const { selectOne, selectAll } = useSelectRows<User>(users);
+  const { selectedRows, selectOne, selectAll, clearRows } =
+    useSelectRows<User>(users);
 
   const {
     filters,
@@ -39,6 +41,7 @@ export default function AdminDashboard() {
     apiParamsString,
     totalPages,
     sorts,
+    limit,
     updateFilters,
     updateSorts,
     nextPage,
@@ -59,6 +62,8 @@ export default function AdminDashboard() {
 
   const { isLoading: fetchUsersKpisLoading, fetchData: fetchUsersKpis } =
     useFetch(`/admin/api/users/kpis`);
+
+  const { fetchData: doArchiveUsers } = useFetch(`/admin/api/users/archive`);
 
   const getUsersKpis = useCallback(async () => {
     try {
@@ -91,6 +96,29 @@ export default function AdminDashboard() {
     }
   }, [fetchUsers, toast, setTotalPages, setUsers]);
 
+  const archiveUsers = useCallback(
+    async (selectedRows: SelectedRows) => {
+      try {
+        const { data } = await doArchiveUsers({
+          method: "PATCH",
+          body: JSON.stringify({ usersId: selectedRows }),
+        });
+        toast({
+          variant: "default",
+          title: "Archive users success",
+          description: `Success: ${data.success}`,
+        });
+      } catch (err) {
+        toast({
+          variant: "destructive",
+          title: "Archive users failed",
+          description: `Error: ${err}`,
+        });
+      }
+    },
+    [toast, doArchiveUsers]
+  );
+
   const totalUsersCount = useMemo(() => {
     return usersKpis.totalUsers;
   }, [usersKpis]);
@@ -122,9 +150,14 @@ export default function AdminDashboard() {
     [selectOne]
   );
 
-  const onDelete = (user: User) => {
-    alert(`Delete ${user.id}`);
-  };
+  const onArchive = useCallback(
+    async (usersId: (string | number)[]) => {
+      await archiveUsers(usersId);
+      clearRows();
+      getUsers();
+    },
+    [clearRows, archiveUsers, getUsers]
+  );
 
   const onEdit = (user: User) => {
     alert(`Edit ${user.id}`);
@@ -143,11 +176,21 @@ export default function AdminDashboard() {
         onSelectAll,
         onSelectOne,
         onEdit,
-        onDelete,
+        onArchive,
         onSortingChanged,
         sorts,
+        selectedRows,
+        limit,
       }),
-    [sorts, onSortingChanged, onSelectAll, onSelectOne]
+    [
+      sorts,
+      selectedRows,
+      limit,
+      onSortingChanged,
+      onSelectAll,
+      onSelectOne,
+      onArchive,
+    ]
   );
 
   const filtersDef = useMemo(
@@ -194,7 +237,12 @@ export default function AdminDashboard() {
         </Grid>
         <Grid>
           <GridItem columnSpan={12} rowSpan={3}>
-            <Card title="All users" minHeight={300}>
+            <Card
+              title="All users"
+              minHeight={300}
+              archiveButton={selectedRows.length > 0}
+              onMultipleArchive={() => onArchive(selectedRows)}
+            >
               <FiltersSection
                 filters={filtersDef}
                 hasAdditionalFilter={hasAdditionalFilter}

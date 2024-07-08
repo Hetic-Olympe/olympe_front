@@ -2,11 +2,14 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 import { LoadingSpinner } from "../loadingSpinner";
 import styles from "./Card.module.scss";
+import { Button } from "../button";
 interface CardProps {
   title: string;
   isLoading?: boolean;
   children: React.ReactNode;
   link?: string;
+  archiveButton?: boolean;
+  onMultipleArchive?: () => void;
   padding?: number;
   minHeight?: number;
   bannerPictureSrc?: string;
@@ -25,8 +28,10 @@ export const Card = ({
   isLoading = false,
   children,
   link,
+  archiveButton = false,
   padding = 32,
   minHeight = 0,
+  onMultipleArchive,
 }: CardProps) => {
   return (
     <div className={styles.card} style={{ minHeight }}>
@@ -36,6 +41,11 @@ export const Card = ({
           <NavLink to={link} className={styles.card__header__link}>
             View all
           </NavLink>
+        )}
+        {archiveButton && (
+          <Button type="button" onClick={onMultipleArchive}>
+            Archive
+          </Button>
         )}
       </div>
       <div
