@@ -20,6 +20,7 @@ export interface User {
   lastname: string;
   phone: string;
   isConnected: boolean;
+  isArchived: boolean;
   role: {
     id: number;
     label: RoleLabel;
