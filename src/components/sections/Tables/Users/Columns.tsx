@@ -17,7 +17,7 @@ import { SelectedRows } from "@/types/SelectRows";
 export interface UserColumnsProps {
   onSelectAll: () => void;
   onSelectOne: (userId: User["id"]) => void;
-  onEdit: (value: User) => void;
+  onEdit: (userId: User["id"]) => void;
   onArchive: (userId: User["id"][]) => void;
   onSortingChanged: (
     sortKey: string,
@@ -161,7 +161,7 @@ export const getUsersColumns = ({
       return (
         <DataTableRowActions
           row={row}
-          onEdit={onEdit}
+          onEdit={() => onEdit(row.original.id)}
           onArchive={() => onArchive([row.original.id])}
         />
       );
