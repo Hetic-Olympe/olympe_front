@@ -17,6 +17,7 @@ import { getUsersColumns } from "@/components/sections/Tables/Users/Columns";
 import { FiltersSection } from "@/components/sections/Filters/FiltersSection";
 import { getUserFiltersDef } from "@/components/sections/Filters/FiltersDef/FiltersDefUsers";
 import { SelectedRows } from "@/types/SelectRows";
+import { useNavigate } from "react-router-dom";
 
 export interface UsersKpis {
   totalUsers: number;
@@ -26,6 +27,7 @@ export interface UsersKpis {
 
 export default function AdminDashboard() {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [users, setUsers] = useState<User[]>([]);
   const [usersKpis, setUsersKpis] = useState<UsersKpis>({
     totalUsers: 0,
@@ -159,9 +161,12 @@ export default function AdminDashboard() {
     [clearRows, archiveUsers, getUsers]
   );
 
-  const onEdit = (user: User) => {
-    alert(`Edit ${user.id}`);
-  };
+  const onEdit = useCallback(
+    (userId: string | number) => {
+      navigate(`user/${userId}`);
+    },
+    [navigate]
+  );
 
   const onSortingChanged = useCallback(
     (sortKey: string, sortOrder: false | "asc" | "desc") => {
@@ -190,6 +195,7 @@ export default function AdminDashboard() {
       onSelectAll,
       onSelectOne,
       onArchive,
+      onEdit,
     ]
   );
 
