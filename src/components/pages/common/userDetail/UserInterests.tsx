@@ -66,7 +66,7 @@ export default function UserInterests({ user }: UserInterestsProps) {
         console.error("err", err);
       }
     },
-    [patchUserInterests, toast]
+    [patchUserInterests]
   );
 
   return (

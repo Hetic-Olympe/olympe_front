@@ -13,6 +13,7 @@ import {
   getRowIsSelected,
 } from "@/lib/utils-selecRows";
 import { SelectedRows } from "@/types/SelectRows";
+import { BadgeRole } from "@/components/ui/Badges/BadgeRole/BadgeRole";
 
 export interface UserColumnsProps {
   onSelectAll: () => void;
@@ -88,14 +89,24 @@ export const getUsersColumns = ({
     accessorKey: "role.label",
     header: () => {
       return (
-        <ButtonTableHeader
-          sortDirection={getIsSorted(sorts, "role")}
-          onSortingChanged={() =>
-            onSortingChanged("role", toogleSort(getIsSorted(sorts, "role")))
-          }
-        >
-          Role
-        </ButtonTableHeader>
+        <div className="text-center">
+          <ButtonTableHeader
+            sortDirection={getIsSorted(sorts, "role")}
+            onSortingChanged={() =>
+              onSortingChanged("role", toogleSort(getIsSorted(sorts, "role")))
+            }
+          >
+            Role
+          </ButtonTableHeader>
+        </div>
+      );
+    },
+    cell: ({ row }) => {
+      const user = row.original;
+      return (
+        <div className="text-center">
+          <BadgeRole role={user.role.label}>{user.role.label}</BadgeRole>
+        </div>
       );
     },
   },
@@ -103,7 +114,7 @@ export const getUsersColumns = ({
     accessorKey: "isConnected",
     header: () => {
       return (
-        <div className="flex justify-center">
+        <div className="text-center">
           <ButtonTableHeader
             sortDirection={getIsSorted(sorts, "isConnected")}
             onSortingChanged={() =>
@@ -121,7 +132,7 @@ export const getUsersColumns = ({
     cell: ({ row }) => {
       const user = row.original;
       return (
-        <div className="flex justify-center">
+        <div className="text-center">
           {user.isConnected ? "Active" : "Inactive"}
         </div>
       );
@@ -131,7 +142,7 @@ export const getUsersColumns = ({
     accessorKey: "isArchived",
     header: () => {
       return (
-        <div className="flex justify-center">
+        <div className="text-center">
           <ButtonTableHeader
             sortDirection={getIsSorted(sorts, "isArchived")}
             onSortingChanged={() =>
