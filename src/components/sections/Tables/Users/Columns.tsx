@@ -15,6 +15,7 @@ import {
 import { SelectedRows } from "@/types/SelectRows";
 import { BadgeRole } from "@/components/ui/Badges/BadgeRole/BadgeRole";
 import { BadgeDot } from "@/components/ui/Badges/BadgeDot/BadgeDot";
+import { Badge } from "@/components/ui/badge";
 
 export interface UserColumnsProps {
   onSelectAll: () => void;
@@ -163,8 +164,10 @@ export const getUsersColumns = ({
     cell: ({ row }) => {
       const user = row.original;
       return (
-        <div className="flex justify-center">
-          {user.isArchived ? "Archived" : "Not Archived"}
+        <div className="text-center">
+          <Badge variant={user.isArchived ? "danger" : "success"}>
+            {user.isArchived ? "Archived" : "In use"}
+          </Badge>
         </div>
       );
     },
