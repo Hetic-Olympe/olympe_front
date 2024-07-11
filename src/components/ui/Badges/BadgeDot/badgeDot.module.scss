@@ -1,0 +1,14 @@
+.dot {
+  height: 8px;
+  width: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.active_variant {
+  background-color: var(--color-success);
+}
+
+.inactive_variant {
+  background-color: var(--color-danger);
+}
