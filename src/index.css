@@ -5,7 +5,7 @@
 
 @layer base {
   :root {
-    --primary: #23b2f5;
+    --primary: hsl(199, 91%, 55%);
     --background: #f9fbfc;
     --color-concert: #7f23f5;
     --color-concert-light: #f1e7fe;
@@ -18,7 +18,9 @@
     --color-role-admin: #fb923c;
     --color-role-user: #23b2f5;
     --color-danger: #ec334d;
+    --color-danger-light: #fde9e9;
     --color-success: #2ea44f;
+    --color-success-light: #e5ffec;
     --stroke-color: #dfe7ec;
     --text-grey-200: #7295b0;
     --text-grey-300: #446279;
