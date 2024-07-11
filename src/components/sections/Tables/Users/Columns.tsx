@@ -14,6 +14,7 @@ import {
 } from "@/lib/utils-selecRows";
 import { SelectedRows } from "@/types/SelectRows";
 import { BadgeRole } from "@/components/ui/Badges/BadgeRole/BadgeRole";
+import { BadgeDot } from "@/components/ui/Badges/BadgeDot/BadgeDot";
 
 export interface UserColumnsProps {
   onSelectAll: () => void;
@@ -133,7 +134,9 @@ export const getUsersColumns = ({
       const user = row.original;
       return (
         <div className="text-center">
-          {user.isConnected ? "Active" : "Inactive"}
+          <BadgeDot isActive={user.isConnected}>
+            {user.isConnected ? "Active" : "Inactive"}
+          </BadgeDot>
         </div>
       );
     },
