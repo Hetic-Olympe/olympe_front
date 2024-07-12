@@ -3,7 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Switch } from "@/components/ui/switch";
 import ButtonTableHeader from "../ButtonTableHeader";
-import FlagCell from "../Cells/FlagCell";
+import FlagCell from "../Cells/FlagCell/FlagCell";
 import { Country } from "@/types/Country";
 import { Sort } from "@/types/Sort";
 import { getIsSorted, toogleSort } from "@/lib/utils-sorts";

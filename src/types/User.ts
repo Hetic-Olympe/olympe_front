@@ -14,13 +14,14 @@ export interface Interest {
 export interface User {
   id: string;
   createdAt: string;
-  nicename: string;
+  fullname: string | undefined;
   email: string;
-  firstname: string;
-  lastname: string;
-  phone: string;
+  firstname: string | undefined;
+  lastname: string | undefined;
+  phone: string | undefined;
   isConnected: boolean;
   isArchived: boolean;
+  profileUrl: string | undefined;
   role: {
     id: number;
     label: RoleLabel;

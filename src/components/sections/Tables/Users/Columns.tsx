@@ -16,6 +16,7 @@ import { SelectedRows } from "@/types/SelectRows";
 import { BadgeRole } from "@/components/ui/Badges/BadgeRole/BadgeRole";
 import { BadgeDot } from "@/components/ui/Badges/BadgeDot/BadgeDot";
 import { Badge } from "@/components/ui/badge";
+import ProfileCell from "../Cells/ProfileCell/ProfileCell";
 
 export interface UserColumnsProps {
   onSelectAll: () => void;
@@ -82,6 +83,12 @@ export const getUsersColumns = ({
         </ButtonTableHeader>
       );
     },
+    cell: ({ row }) => (
+      <ProfileCell
+        profileUrl={row.original.profileUrl}
+        label={row.original.fullname}
+      />
+    ),
   },
   {
     accessorKey: "email",
