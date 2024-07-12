@@ -3,8 +3,8 @@ import styles from "./profileCell.module.scss";
 import UserIcon from "@/components/icons/UserIcon";
 
 interface ProfileCellProps {
-  label: string | null;
-  profileUrl: string | null;
+  label: string | undefined;
+  profileUrl: string | undefined;
 }
 
 const ProfileCell = ({ profileUrl, label }: ProfileCellProps) => {

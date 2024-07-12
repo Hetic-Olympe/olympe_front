@@ -94,11 +94,11 @@ export default function UserInformationForm({
         if (!data) return;
 
         syncUser(data);
-        updateUserCookies(data.firstname, data.email);
+        updateUserCookies(data.firstname || "John Doe", data.email);
 
         toast({
           title: "User updated successfully",
-          description: `User ${data.firstname} ${data.lastname} has been updated.`,
+          description: `User has been updated.`,
         });
       } catch (err) {
         console.error("err", err);
@@ -125,7 +125,7 @@ export default function UserInformationForm({
                 id="firstname"
                 type="text"
                 onChange={field.onChange}
-                defaultValue={field.value}
+                defaultValue={field.value || undefined}
               />
               <FormMessage />
             </FormItem>
@@ -141,7 +141,7 @@ export default function UserInformationForm({
                 id="lastname"
                 type="text"
                 onChange={field.onChange}
-                defaultValue={field.value}
+                defaultValue={field.value || undefined}
               />
               <FormMessage />
             </FormItem>
@@ -173,7 +173,7 @@ export default function UserInformationForm({
                 id="phone"
                 type="tel"
                 onChange={field.onChange}
-                defaultValue={field.value}
+                defaultValue={field.value || undefined}
               />
               <FormMessage />
             </FormItem>
