@@ -72,7 +72,7 @@ export function DataTable<TData, TValue>({
         {isLoading ? (
           <TableBody>
             <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 ">
+              <TableCell colSpan={columns?.length} className="h-24 ">
                 <LoadingSpinner className="flex justify-center" size="l" />
               </TableCell>
             </TableRow>
@@ -105,7 +105,7 @@ export function DataTable<TData, TValue>({
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                  colSpan={columns?.length}
                   className="h-24 text-center"
                 >
                   No results.

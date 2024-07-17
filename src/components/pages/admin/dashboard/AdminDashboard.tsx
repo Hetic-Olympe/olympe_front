@@ -3,8 +3,7 @@ import PageTemplate from "@/components/sections/PageTeample/PageTemplate";
 import { Grid, GridItem } from "@/components/ui/Grid/Grid";
 import { Card, KPICard } from "@/components/ui/Card/Card";
 import StatsIcon from "@/components/icons/StatsIcon";
-import { useState, useEffect, useMemo, useCallback } from "react";
-import useFetch from "@/hooks/useFetch";
+import { useMemo, useCallback } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import styles from "./adminDashboard.module.scss";
 import { DataTable } from "@/components/sections/Tables/Table";
@@ -16,8 +15,9 @@ import { User } from "@/types/User";
 import { getUsersColumns } from "@/components/sections/Tables/Users/Columns";
 import { FiltersSection } from "@/components/sections/Filters/FiltersSection";
 import { getUserFiltersDef } from "@/components/sections/Filters/FiltersDef/FiltersDefUsers";
-import { SelectedRows } from "@/types/SelectRows";
 import { useNavigate } from "react-router-dom";
+import useQuery from "@/hooks/useQuery";
+import useMutation, { Method } from "@/hooks/useMutation";
 
 export interface UsersKpis {
   totalUsers: number;
@@ -28,14 +28,6 @@ export interface UsersKpis {
 export default function AdminDashboard() {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [users, setUsers] = useState<User[]>([]);
-  const [usersKpis, setUsersKpis] = useState<UsersKpis>({
-    totalUsers: 0,
-    totalUsersActive: 0,
-    totalNewUsers: 0,
-  });
-  const { selectedRows, selectOne, selectAll, clearRows } =
-    useSelectRows<User>(users);
 
   const {
     filters,
@@ -49,7 +41,6 @@ export default function AdminDashboard() {
     nextPage,
     previousPage,
     goToIndexPage,
-    setTotalPages,
     clearFilters,
   } = useFiltersAndPagination<UserFilters>([
     "fullname",
@@ -58,88 +49,49 @@ export default function AdminDashboard() {
   ]);
 
   // -- FETCH
-  const { isLoading: fetchUsersLoading, fetchData: fetchUsers } = useFetch(
-    `/admin/api/users${apiParamsString}`
-  );
-
-  const { isLoading: fetchUsersKpisLoading, fetchData: fetchUsersKpis } =
-    useFetch(`/admin/api/users/kpis`);
-
-  const { fetchData: doArchiveUsers } = useFetch(`/admin/api/users/archive`);
-
-  const getUsersKpis = useCallback(async () => {
-    try {
-      const { data } = await fetchUsersKpis();
-      if (data) {
-        setUsersKpis(data);
-      }
-    } catch (err) {
+  const {
+    data: users,
+    isLoading: fetchUsersLoading,
+    refetch: refectUsers,
+  } = useQuery<User[]>(`/admin/api/users${apiParamsString}`, {
+    onFailed: (err) => {
       toast({
         variant: "destructive",
         title: "Fetch users failed",
         description: `Error: ${err}`,
       });
-    }
-  }, [setUsersKpis, fetchUsersKpis, toast]);
+    },
+  });
 
-  const getUsers = useCallback(async () => {
-    try {
-      const { data } = await fetchUsers();
-      if (data) {
-        setUsers(data.users);
-        setTotalPages(data.totalPages);
-      }
-    } catch (err) {
-      toast({
-        variant: "destructive",
-        title: "Fetch users failed",
-        description: `Error: ${err}`,
-      });
-    }
-  }, [fetchUsers, toast, setTotalPages, setUsers]);
-
-  const archiveUsers = useCallback(
-    async (selectedRows: SelectedRows) => {
-      try {
-        const { data } = await doArchiveUsers({
-          method: "PATCH",
-          body: JSON.stringify({ usersId: selectedRows }),
+  const { data: userKpis, isLoading: fetchUsersKpisLoading } =
+    useQuery<UsersKpis>(`/admin/api/users/kpis`, {
+      onFailed: (err) => {
+        toast({
+          variant: "destructive",
+          title: "Fetch users failed",
+          description: `Error: ${err}`,
         });
+      },
+    });
+
+  const { mutate: doArchiveUsers } = useMutation(
+    `/admin/api/users/archive`,
+    Method.PATCH,
+    {
+      onSuccess(data) {
+        clearRows();
+        refectUsers();
         toast({
           variant: "default",
           title: "Archive users success",
           description: `Success: ${data.success}`,
         });
-      } catch (err) {
-        toast({
-          variant: "destructive",
-          title: "Archive users failed",
-          description: `Error: ${err}`,
-        });
-      }
-    },
-    [toast, doArchiveUsers]
+      },
+    }
   );
 
-  const totalUsersCount = useMemo(() => {
-    return usersKpis.totalUsers;
-  }, [usersKpis]);
-
-  const connectedUsersCount = useMemo(() => {
-    return usersKpis.totalUsersActive;
-  }, [usersKpis]);
-
-  const newUsersCount = useMemo(() => {
-    return usersKpis.totalNewUsers;
-  }, [usersKpis]);
-
-  useEffect(() => {
-    getUsers();
-  }, [getUsers]);
-
-  useEffect(() => {
-    getUsersKpis();
-  }, [getUsersKpis]);
+  const { selectedRows, selectOne, selectAll, clearRows } =
+    useSelectRows<User>(users);
 
   const onSelectAll = useCallback(() => {
     selectAll();
@@ -154,11 +106,9 @@ export default function AdminDashboard() {
 
   const onArchive = useCallback(
     async (usersId: (string | number)[]) => {
-      await archiveUsers(usersId);
-      clearRows();
-      getUsers();
+      await doArchiveUsers({ usersId });
     },
-    [clearRows, archiveUsers, getUsers]
+    [doArchiveUsers]
   );
 
   const onEdit = useCallback(
@@ -219,7 +169,7 @@ export default function AdminDashboard() {
           <GridItem columnSpan={3}>
             <KPICard
               title="Total users"
-              value={totalUsersCount}
+              value={userKpis?.totalUsers}
               isLoading={fetchUsersKpisLoading}
               icon={<StatsIcon color={"#FB923C"} />}
             />
@@ -227,7 +177,7 @@ export default function AdminDashboard() {
           <GridItem columnSpan={3}>
             <KPICard
               title="Connected"
-              value={connectedUsersCount}
+              value={userKpis?.totalUsersActive}
               isLoading={fetchUsersKpisLoading}
               icon={<StatsIcon color={"#FB923C"} />}
             />
@@ -235,7 +185,7 @@ export default function AdminDashboard() {
           <GridItem columnSpan={3}>
             <KPICard
               title="New users"
-              value={newUsersCount}
+              value={userKpis?.totalNewUsers}
               isLoading={fetchUsersKpisLoading}
               icon={<StatsIcon color={"#FB923C"} />}
             />
