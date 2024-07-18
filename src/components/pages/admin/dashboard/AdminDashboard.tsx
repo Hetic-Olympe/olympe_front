@@ -3,8 +3,7 @@ import PageTemplate from "@/components/sections/PageTeample/PageTemplate";
 import { Grid, GridItem } from "@/components/ui/Grid/Grid";
 import { Card, KPICard } from "@/components/ui/Card/Card";
 import StatsIcon from "@/components/icons/StatsIcon";
-import { useState, useEffect, useMemo, useCallback } from "react";
-import useFetch from "@/hooks/useFetch";
+import { useMemo, useCallback } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import styles from "./adminDashboard.module.scss";
 import { DataTable } from "@/components/sections/Tables/Table";
@@ -12,30 +11,21 @@ import useSelectRows from "@/hooks/useSelectRows";
 import useFiltersAndPagination from "@/hooks/useFiltersAndPagination";
 import { UserFilters } from "@/types/Filters";
 import { PaginationTable } from "@/components/ui/Pagination/PaginationTable";
-import { User } from "@/types/User";
+import { ArchiveUsersData, User, UsersData, UsersKpis } from "@/types/User";
 import { getUsersColumns } from "@/components/sections/Tables/Users/Columns";
 import { FiltersSection } from "@/components/sections/Filters/FiltersSection";
 import { getUserFiltersDef } from "@/components/sections/Filters/FiltersDef/FiltersDefUsers";
-import { SelectedRows } from "@/types/SelectRows";
 import { useNavigate } from "react-router-dom";
-
-export interface UsersKpis {
-  totalUsers: number;
-  totalUsersActive: number;
-  totalNewUsers: number;
-}
+import useQuery from "@/hooks/useQuery";
+import useMutation from "@/hooks/useMutation";
+import { Methods } from "@/types/Methods";
 
 export default function AdminDashboard() {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [users, setUsers] = useState<User[]>([]);
-  const [usersKpis, setUsersKpis] = useState<UsersKpis>({
-    totalUsers: 0,
-    totalUsersActive: 0,
-    totalNewUsers: 0,
-  });
-  const { selectedRows, selectOne, selectAll, clearRows } =
-    useSelectRows<User>(users);
+  const { selectedRows, selectOne, selectAll, clearRows } = useSelectRows<User>(
+    []
+  );
 
   const {
     filters,
@@ -58,88 +48,83 @@ export default function AdminDashboard() {
   ]);
 
   // -- FETCH
-  const { isLoading: fetchUsersLoading, fetchData: fetchUsers } = useFetch(
-    `/admin/api/users${apiParamsString}`
+  const {
+    data: usersData,
+    isLoading: fetchUsersLoading,
+    fetchData: fetchUsers,
+  } = useQuery<UsersData>(
+    `/admin/api/users${apiParamsString}`,
+    useCallback(
+      (data: UsersData) => {
+        setTotalPages(data.totalPages);
+      },
+      [setTotalPages]
+    ),
+    useCallback(
+      (err: unknown) => {
+        toast({
+          variant: "destructive",
+          title: "Fetch users failed",
+          description: `Error: ${err}`,
+        });
+      },
+      [toast]
+    )
   );
 
-  const { isLoading: fetchUsersKpisLoading, fetchData: fetchUsersKpis } =
-    useFetch(`/admin/api/users/kpis`);
+  const { data: usersKpisData, isLoading: fetchUsersKpisLoading } =
+    useQuery<UsersKpis>(
+      `/admin/api/users/kpis`,
+      undefined,
+      useCallback(
+        (err: unknown) => {
+          toast({
+            variant: "destructive",
+            title: "Fetch users kpis failed",
+            description: `Error: ${err}`,
+          });
+        },
+        [toast]
+      )
+    );
 
-  const { fetchData: doArchiveUsers } = useFetch(`/admin/api/users/archive`);
-
-  const getUsersKpis = useCallback(async () => {
-    try {
-      const { data } = await fetchUsersKpis();
-      if (data) {
-        setUsersKpis(data);
-      }
-    } catch (err) {
-      toast({
-        variant: "destructive",
-        title: "Fetch users failed",
-        description: `Error: ${err}`,
-      });
-    }
-  }, [setUsersKpis, fetchUsersKpis, toast]);
-
-  const getUsers = useCallback(async () => {
-    try {
-      const { data } = await fetchUsers();
-      if (data) {
-        setUsers(data.users);
-        setTotalPages(data.totalPages);
-      }
-    } catch (err) {
-      toast({
-        variant: "destructive",
-        title: "Fetch users failed",
-        description: `Error: ${err}`,
-      });
-    }
-  }, [fetchUsers, toast, setTotalPages, setUsers]);
-
-  const archiveUsers = useCallback(
-    async (selectedRows: SelectedRows) => {
-      try {
-        const { data } = await doArchiveUsers({
-          method: "PATCH",
-          body: JSON.stringify({ usersId: selectedRows }),
-        });
+  const { mutateData: doArchiveUsers } = useMutation(
+    `/admin/api/users/archive`,
+    useCallback(
+      async (data: ArchiveUsersData) => {
+        await fetchUsers();
+        clearRows();
         toast({
           variant: "default",
           title: "Archive users success",
           description: `Success: ${data.success}`,
         });
-      } catch (err) {
+      },
+      [toast, fetchUsers, clearRows]
+    ),
+    useCallback(
+      (err: unknown) => {
         toast({
           variant: "destructive",
           title: "Archive users failed",
           description: `Error: ${err}`,
         });
-      }
-    },
-    [toast, doArchiveUsers]
+      },
+      [toast]
+    )
   );
 
   const totalUsersCount = useMemo(() => {
-    return usersKpis.totalUsers;
-  }, [usersKpis]);
+    return usersKpisData?.totalUsers;
+  }, [usersKpisData]);
 
   const connectedUsersCount = useMemo(() => {
-    return usersKpis.totalUsersActive;
-  }, [usersKpis]);
+    return usersKpisData?.totalUsersActive;
+  }, [usersKpisData]);
 
   const newUsersCount = useMemo(() => {
-    return usersKpis.totalNewUsers;
-  }, [usersKpis]);
-
-  useEffect(() => {
-    getUsers();
-  }, [getUsers]);
-
-  useEffect(() => {
-    getUsersKpis();
-  }, [getUsersKpis]);
+    return usersKpisData?.totalNewUsers;
+  }, [usersKpisData]);
 
   const onSelectAll = useCallback(() => {
     selectAll();
@@ -154,11 +139,12 @@ export default function AdminDashboard() {
 
   const onArchive = useCallback(
     async (usersId: (string | number)[]) => {
-      await archiveUsers(usersId);
-      clearRows();
-      getUsers();
+      await doArchiveUsers({
+        method: Methods.PATCH,
+        body: JSON.stringify({ usersId }),
+      });
     },
-    [clearRows, archiveUsers, getUsers]
+    [doArchiveUsers]
   );
 
   const onEdit = useCallback(
@@ -219,7 +205,7 @@ export default function AdminDashboard() {
           <GridItem columnSpan={3}>
             <KPICard
               title="Total users"
-              value={totalUsersCount}
+              value={totalUsersCount || 0}
               isLoading={fetchUsersKpisLoading}
               icon={<StatsIcon color={"#FB923C"} />}
             />
@@ -227,7 +213,7 @@ export default function AdminDashboard() {
           <GridItem columnSpan={3}>
             <KPICard
               title="Connected"
-              value={connectedUsersCount}
+              value={connectedUsersCount || 0}
               isLoading={fetchUsersKpisLoading}
               icon={<StatsIcon color={"#FB923C"} />}
             />
@@ -235,7 +221,7 @@ export default function AdminDashboard() {
           <GridItem columnSpan={3}>
             <KPICard
               title="New users"
-              value={newUsersCount}
+              value={newUsersCount || 0}
               isLoading={fetchUsersKpisLoading}
               icon={<StatsIcon color={"#FB923C"} />}
             />
@@ -258,7 +244,7 @@ export default function AdminDashboard() {
               <div>
                 <DataTable
                   columns={columns}
-                  data={users}
+                  data={usersData?.users || []}
                   isLoading={fetchUsersLoading}
                 />
                 {totalPages > 1 && (
