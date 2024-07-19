@@ -44,6 +44,8 @@ export interface UsersKpis {
 export interface UsersData {
   users: User[];
   totalPages: number;
+  page: number;
+  total: number;
 }
 
 // Mutate data interface
