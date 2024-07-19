@@ -1,22 +1,25 @@
 import Header from "@/components/sections/Header/Header";
 import PageTemplate from "@/components/sections/PageTeample/PageTemplate";
 import { useToast } from "@/components/ui/use-toast";
-import useFetch from "@/hooks/useFetch";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import styles from "./adminCountries.module.scss";
 import { Grid, GridItem } from "@/components/ui/Grid/Grid";
-import { SearchInput } from "@/components/ui/Inputs/Search/SearchInput";
 import { Card } from "@/components/ui/Card/Card";
-import { continentItems, isParticipateItems } from "@/types/SelectItems";
 import { CountryFilters } from "@/types/Filters";
 import { PaginationTable } from "@/components/ui/Pagination/PaginationTable";
 import useFiltersAndPagination from "@/hooks/useFiltersAndPagination";
 import { getCountriesColumns } from "../../../sections/Tables/Countries/Columns";
 import { DataTable } from "@/components/sections/Tables/Table";
-import { FilterDropDown } from "@/components/ui/Inputs/Filters/FilterDropDown";
-import { Button } from "@/components/ui/button";
-import CloseIcon from "@/components/icons/CloseIcon";
-import { Country } from "@/types/Country";
+import {
+  ChangeParticipationData,
+  CountriesData,
+  Country,
+} from "@/types/Country";
+import useQuery from "@/hooks/useQuery";
+import useMutation from "@/hooks/useMutation";
+import { Methods } from "@/types/Methods";
+import { getCountryFiltersDef } from "@/components/sections/Filters/FiltersDef/FiltersDefCountries";
+import { FiltersSection } from "@/components/sections/Filters/FiltersSection";
 
 export default function AdminCountries() {
   const { toast } = useToast();
@@ -43,77 +46,64 @@ export default function AdminCountries() {
   ]);
 
   // -- FETCH
-  const { isLoading: loadingFetchData, fetchData: fetchCountries } = useFetch(
-    `/admin/api/countries${apiParamsString}`
-  );
+  const { isLoading: loadingFetchData, fetchData: fetchCountries } =
+    useQuery<CountriesData>(
+      `/admin/api/countries${apiParamsString}`,
+      useCallback(
+        (data: CountriesData) => {
+          setCountries(data.countries);
+          setTotalPages(data.totalPages);
+        },
+        [setTotalPages]
+      ),
+      useCallback(
+        (err: unknown) => {
+          toast({
+            variant: "destructive",
+            title: "Fetch countries failed",
+            description: `Error: ${err}`,
+          });
+        },
+        [toast]
+      )
+    );
 
-  const { fetchData: changeCountryParticipation } = useFetch(
-    "/admin/api/countries/update/participation"
-  );
-
-  const getCountries = useCallback(async () => {
-    try {
-      const { data } = await fetchCountries();
-
-      if (data) {
-        setCountries(data.countries);
-        setTotalPages(data.totalPages);
-      }
-    } catch (err) {
-      toast({
-        variant: "destructive",
-        title: "Fetch countries failed",
-        description: `Error: ${err}`,
-      });
-    }
-  }, [fetchCountries, toast, setTotalPages]);
-
-  useEffect(() => {
-    getCountries();
-  }, [getCountries]);
-
-  const onParticipateChanged = useCallback(
-    async (country: Country): Promise<void> => {
-      try {
-        await changeCountryParticipation({
-          method: "POST",
-          body: JSON.stringify({ id: country.id }),
+  const { mutateData: doChangeCountryParticipation } = useMutation(
+    `/admin/api/countries/update/participation`,
+    useCallback(
+      async (data: ChangeParticipationData) => {
+        await fetchCountries();
+        toast({
+          variant: "default",
+          title: "Country participation change successfully",
+          description: `Success: ${data.success}`,
         });
-        // Update local state immediately after a successful server update
-        setCountries((prevCountries) =>
-          prevCountries.map((previousCountry) =>
-            previousCountry.id === country.id
-              ? {
-                  ...previousCountry,
-                  isParticipate: !previousCountry.isParticipate,
-                }
-              : previousCountry
-          )
-        );
-      } catch (error) {
+      },
+      [toast, fetchCountries]
+    ),
+    useCallback(
+      (err: unknown) => {
         toast({
           variant: "destructive",
           title: "Change country participation failed",
-          description: `Error: ${error}`,
+          description: `Error: ${err}`,
         });
-      }
+      },
+      [toast]
+    )
+  );
+
+  const onParticipateChanged = useCallback(
+    async (country: Country): Promise<void> => {
+      await doChangeCountryParticipation({
+        method: Methods.POST,
+        body: JSON.stringify({ id: country.id }),
+      });
     },
-    [changeCountryParticipation, toast]
+    [doChangeCountryParticipation]
   );
 
   // -- LOGIC
-  const handleSearch = (name: string | null) => {
-    updateFilters("name", name);
-  };
-
-  const handleSelectContinent = (continentId: string | null) => {
-    updateFilters("continentId", continentId);
-  };
-
-  const handleSelectIsParticipate = (isParticipate: string | null) => {
-    updateFilters("isParticipate", isParticipate);
-  };
-
   const onSortingChanged = useCallback(
     (sortKey: string, sortOrder: false | "asc" | "desc") => {
       updateSorts(sortKey, sortOrder);
@@ -131,6 +121,15 @@ export default function AdminCountries() {
     [onParticipateChanged, sorts, onSortingChanged]
   );
 
+  const filtersDef = useMemo(
+    () =>
+      getCountryFiltersDef({
+        updateFilters,
+        filters,
+      }),
+    [updateFilters, filters]
+  );
+
   return (
     <>
       <Header
@@ -141,33 +140,12 @@ export default function AdminCountries() {
         <Grid>
           <GridItem columnSpan={12}>
             <Card title="All Countries" minHeight={300}>
-              <div className={styles.filter_section}>
-                <SearchInput
-                  onSearch={handleSearch}
-                  initValue={filters.name || ""}
-                  placeholder="Search by name"
-                />
-                <FilterDropDown
-                  onSelect={handleSelectContinent}
-                  title="Continents"
-                  initValue={filters.continentId || ""}
-                  label="Select a continent"
-                  items={continentItems}
-                />
-                <FilterDropDown
-                  onSelect={handleSelectIsParticipate}
-                  title="Is Participiate"
-                  initValue={filters.isParticipate || ""}
-                  label="Filter by particpiate"
-                  items={isParticipateItems}
-                />
-                {hasAdditionalFilter && (
-                  <Button variant="ghost" onClick={() => clearFilters()}>
-                    Reset
-                    <CloseIcon width="16" />
-                  </Button>
-                )}
-              </div>
+              <FiltersSection
+                filters={filtersDef}
+                hasAdditionalFilter={hasAdditionalFilter}
+                clear={true}
+                clearFilters={() => clearFilters()}
+              />
               <div>
                 <DataTable
                   columns={columns}

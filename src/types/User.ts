@@ -1,7 +1,10 @@
+// Enums
 export enum RoleLabel {
   USER = "user",
   ADMIN = "admin",
 }
+
+// Linked interfaces
 export interface SportField {
   id: string;
   label: string;
@@ -11,6 +14,7 @@ export interface Interest {
   sportField: SportField;
 }
 
+// Interface
 export interface User {
   id: string;
   createdAt: string;
@@ -28,4 +32,23 @@ export interface User {
   };
   interests: Interest[];
   likes: string[];
+}
+
+// Query data interface
+export interface UsersKpis {
+  totalUsers: number;
+  totalUsersActive: number;
+  totalNewUsers: number;
+}
+
+export interface UsersData {
+  users: User[];
+  totalPages: number;
+  page: number;
+  total: number;
+}
+
+// Mutate data interface
+export interface ArchiveUsersData {
+  success: string;
 }

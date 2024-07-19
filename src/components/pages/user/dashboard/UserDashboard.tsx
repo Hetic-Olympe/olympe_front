@@ -6,8 +6,8 @@ import { MedalsIcon, AthleteIcon } from "@/components/icons/icons";
 import { Grid, GridItem } from "@/components/ui/Grid/Grid";
 import { Card, KPICard } from "@/components/ui/Card/Card";
 import EventCalendar from "@/components/calendar/EventCalendar";
-import timeGridPlugin from '@fullcalendar/timegrid';
-import listPlugin from '@fullcalendar/list';
+import timeGridPlugin from "@fullcalendar/timegrid";
+import listPlugin from "@fullcalendar/list";
 
 export default function UserDashboard() {
   const athletes = athletesData.athletes;
@@ -18,15 +18,27 @@ export default function UserDashboard() {
         subtitle="Description for amazing dashboard in Paris 2024 with all KPI"
       />
       <PageTemplate>
-        <Grid margin={'0px 0px 32px 0px'}>
+        <Grid margin={"0px 0px 32px 0px"}>
           <GridItem columnSpan={3}>
-            <KPICard title="Athletes" value="532" icon={<AthleteIcon color={'#23B2F5'} />} />
+            <KPICard
+              title="Athletes"
+              value={532}
+              icon={<AthleteIcon color={"#23B2F5"} />}
+            />
           </GridItem>
           <GridItem columnSpan={3}>
-            <KPICard title="Medals won" value="192" icon={<MedalsIcon color={'#23B2F5'} />} />
+            <KPICard
+              title="Medals won"
+              value={192}
+              icon={<MedalsIcon color={"#23B2F5"} />}
+            />
           </GridItem>
           <GridItem columnSpan={3}>
-            <KPICard title="Medals won" value="192" icon={<AthleteIcon color={'#23B2F5'} />} />
+            <KPICard
+              title="Medals won"
+              value={192}
+              icon={<AthleteIcon color={"#23B2F5"} />}
+            />
           </GridItem>
         </Grid>
         <Grid>
@@ -56,7 +68,7 @@ export default function UserDashboard() {
             </Card>
           </GridItem>
         </Grid>
-      </PageTemplate >
+      </PageTemplate>
     </>
-  )
+  );
 }

@@ -18,7 +18,7 @@ interface CardProps {
 
 interface KPICardProps {
   title: string;
-  value: number | string;
+  value: number;
   icon: React.ReactNode;
   isLoading?: boolean;
 }
