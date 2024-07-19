@@ -8,7 +8,6 @@ import { Card } from "@/components/ui/Card/Card";
 import { CountryFilters } from "@/types/Filters";
 import { PaginationTable } from "@/components/ui/Pagination/PaginationTable";
 import useFiltersAndPagination from "@/hooks/useFiltersAndPagination";
-import { getCountriesColumns } from "../../../sections/Tables/Countries/Columns";
 import { DataTable } from "@/components/sections/Tables/Table";
 import {
   ChangeParticipationData,
@@ -20,6 +19,7 @@ import useMutation from "@/hooks/useMutation";
 import { Methods } from "@/types/Methods";
 import { getCountryFiltersDef } from "@/components/sections/Filters/FiltersDef/FiltersDefCountries";
 import { FiltersSection } from "@/components/sections/Filters/FiltersSection";
+import { getCountriesColumns } from "@/components/sections/Tables/Countries/Columns";
 
 export default function AdminCountries() {
   const { toast } = useToast();

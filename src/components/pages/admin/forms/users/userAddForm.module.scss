@@ -1,0 +1,37 @@
+.usersList {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  &__item {
+    display: flex;
+    gap: 24px;
+  }
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+
+  &__toggle {
+    display: flex;
+    gap: 8px;
+
+    &__checkbox {
+      cursor: pointer;
+    }
+  }
+}
+
+.search_section,
+.filter_section {
+  margin-bottom: 16px;
+}
+
+.filter_section {
+  display: flex;
+  gap: 8px;
+}
+
+.pagination_section {
+  margin-top: 16px;
+}

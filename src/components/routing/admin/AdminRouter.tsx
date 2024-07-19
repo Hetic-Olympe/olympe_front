@@ -11,8 +11,8 @@ import {
 } from "../../icons/icons";
 import { useCreatePageLink } from "@/hooks/useCreatePageLink";
 import NotFound from "../../sections/NotFound/NotFound";
-import AdminCountries from "../../pages/admin/countries/AdminCountries";
 import AdminDashboardRouter from "./AdminDashboardRouter";
+import AdminCountries from "@/components/pages/admin/dashboard/countries/AdminCountries";
 
 const PRIMARY_ACTIVE_COLOR = "#FB923C";
 const DEFAULT_COLOR = "#7295b0";

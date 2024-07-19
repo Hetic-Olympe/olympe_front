@@ -5,7 +5,9 @@
   padding: 24px 32px;
   border-bottom: 1px var(--stroke-color) solid;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
   gap: 8px;
   background-color: white;
   &__title {

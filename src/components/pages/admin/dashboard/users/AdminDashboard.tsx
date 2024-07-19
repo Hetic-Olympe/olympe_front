@@ -201,6 +201,7 @@ export default function AdminDashboard() {
       <Header
         title="Manage all users"
         subtitle="Handle users information and moderation"
+        button={{ title: "Add user", onClick: () => navigate("user/add") }}
       />
       <PageTemplate>
         <Grid margin={"0px 0px 32px 0px"}>
