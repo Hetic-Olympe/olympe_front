@@ -3,7 +3,7 @@ import PageTemplate from "@/components/sections/PageTeample/PageTemplate";
 import { Grid, GridItem } from "@/components/ui/Grid/Grid";
 import { Card, KPICard } from "@/components/ui/Card/Card";
 import StatsIcon from "@/components/icons/StatsIcon";
-import { useMemo, useCallback } from "react";
+import { useMemo, useCallback, useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import styles from "./adminDashboard.module.scss";
 import { DataTable } from "@/components/sections/Tables/Table";
@@ -23,9 +23,14 @@ import { Methods } from "@/types/Methods";
 export default function AdminDashboard() {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { selectedRows, selectOne, selectAll, clearRows } = useSelectRows<User>(
-    []
-  );
+  const [users, setUsers] = useState<User[]>([]);
+  const [usersKips, setUsersKips] = useState<UsersKpis>({
+    totalUsers: 0,
+    totalUsersActive: 0,
+    totalNewUsers: 0,
+  });
+  const { selectedRows, selectOne, selectAll, clearRows } =
+    useSelectRows<User>(users);
 
   const {
     filters,
@@ -48,45 +53,54 @@ export default function AdminDashboard() {
   ]);
 
   // -- FETCH
-  const {
-    data: usersData,
-    isLoading: fetchUsersLoading,
-    fetchData: fetchUsers,
-  } = useQuery<UsersData>(
-    `/admin/api/users${apiParamsString}`,
-    useCallback(
-      (data: UsersData) => {
-        setTotalPages(data.totalPages);
-      },
-      [setTotalPages]
-    ),
-    useCallback(
-      (err: unknown) => {
-        toast({
-          variant: "destructive",
-          title: "Fetch users failed",
-          description: `Error: ${err}`,
-        });
-      },
-      [toast]
-    )
-  );
-
-  const { data: usersKpisData, isLoading: fetchUsersKpisLoading } =
-    useQuery<UsersKpis>(
-      `/admin/api/users/kpis`,
-      undefined,
+  const { isLoading: fetchUsersLoading, fetchData: fetchUsers } =
+    useQuery<UsersData>(
+      `/admin/api/users${apiParamsString}`,
+      useCallback(
+        (data: UsersData) => {
+          setUsers(data.users);
+          setTotalPages(data.totalPages);
+        },
+        [setTotalPages]
+      ),
       useCallback(
         (err: unknown) => {
           toast({
             variant: "destructive",
-            title: "Fetch users kpis failed",
+            title: "Fetch users failed",
             description: `Error: ${err}`,
           });
         },
         [toast]
       )
     );
+
+  const { isLoading: fetchUsersKpisLoading } = useQuery<UsersKpis>(
+    `/admin/api/users/kpis`,
+    useCallback(
+      (data: UsersKpis) => {
+        setUsersKips((previousKpis) => {
+          return {
+            ...previousKpis,
+            totalUsers: data.totalUsers,
+            totalUsersActive: data.totalUsersActive,
+            totalNewUsers: data.totalNewUsers,
+          };
+        });
+      },
+      [setUsersKips]
+    ),
+    useCallback(
+      (err: unknown) => {
+        toast({
+          variant: "destructive",
+          title: "Fetch users kpis failed",
+          description: `Error: ${err}`,
+        });
+      },
+      [toast]
+    )
+  );
 
   const { mutateData: doArchiveUsers } = useMutation(
     `/admin/api/users/archive`,
@@ -113,18 +127,6 @@ export default function AdminDashboard() {
       [toast]
     )
   );
-
-  const totalUsersCount = useMemo(() => {
-    return usersKpisData?.totalUsers;
-  }, [usersKpisData]);
-
-  const connectedUsersCount = useMemo(() => {
-    return usersKpisData?.totalUsersActive;
-  }, [usersKpisData]);
-
-  const newUsersCount = useMemo(() => {
-    return usersKpisData?.totalNewUsers;
-  }, [usersKpisData]);
 
   const onSelectAll = useCallback(() => {
     selectAll();
@@ -205,7 +207,7 @@ export default function AdminDashboard() {
           <GridItem columnSpan={3}>
             <KPICard
               title="Total users"
-              value={totalUsersCount || 0}
+              value={usersKips.totalUsers}
               isLoading={fetchUsersKpisLoading}
               icon={<StatsIcon color={"#FB923C"} />}
             />
@@ -213,7 +215,7 @@ export default function AdminDashboard() {
           <GridItem columnSpan={3}>
             <KPICard
               title="Connected"
-              value={connectedUsersCount || 0}
+              value={usersKips.totalUsersActive}
               isLoading={fetchUsersKpisLoading}
               icon={<StatsIcon color={"#FB923C"} />}
             />
@@ -221,7 +223,7 @@ export default function AdminDashboard() {
           <GridItem columnSpan={3}>
             <KPICard
               title="New users"
-              value={newUsersCount || 0}
+              value={usersKips.totalNewUsers}
               isLoading={fetchUsersKpisLoading}
               icon={<StatsIcon color={"#FB923C"} />}
             />
@@ -244,7 +246,7 @@ export default function AdminDashboard() {
               <div>
                 <DataTable
                   columns={columns}
-                  data={usersData?.users || []}
+                  data={users}
                   isLoading={fetchUsersLoading}
                 />
                 {totalPages > 1 && (
